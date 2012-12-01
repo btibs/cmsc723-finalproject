@@ -7,6 +7,7 @@
 #echo %s | java -jar berkeleyParser.jar -gr eng_sm6.gr"
 
 import subprocess
+import os
 import sys
 
 VERBOSE = True
@@ -37,11 +38,22 @@ class ParseTree:
 
 def parsePhrase(phrase):
     # get parse from BerkeleyParser
-    parse = subprocess.check_output(['echo %s'%phrase, '| java', '-jar', 'berkeleyParser.jar', '-gr', 'eng_sm6.gr'])
+    # python 2.7+
+    #parse = subprocess.check_output(['echo %s'%phrase, '| java', '-jar', 'berkeleyParser.jar', '-gr', 'eng_sm6.gr'])
+    # python < 2.7
+    process = os.popen("echo %s | java -jar berkeleyParser.jar -gr eng_sm6.gr" % phrase)
+    parse = process.read()
+    process.close()
     return parse
 
 def parseToTree(parse):
-    # example parse: '(S (VP (NP (N cats)) (V run)) )'
+    # example parse: '( (S (NP (DT This)) (VP (VBZ is) (NP (DT a) (NN test)))) )'
+    
+    # parser always has extra layer of parens, remove those
+    parse = parse.strip()
+    if parse.startswith("( "):
+        if parse.endswith(" )"):
+            parse = parse[2:-2]
     
     curTag = None
     arr = [s.strip() for s in parse.split('(') if s != '']
@@ -75,9 +87,12 @@ if __name__ == "__main__":
         for arg in sys.argv[1:]:
             phrase += arg + " "
         phrase = phrase[:-1]
-        parse = parsePhrase(phrase)
+
+        if sys.argv[1] == "-p":
+            parse = phrase[2:]
+	else:
+            parse = parsePhrase(phrase)
         if VERBOSE: print parse
-        parse = phrase
         tree = parseToTree(parse)
         if VERBOSE: print tree
         d = tree.toDict()
