@@ -44,43 +44,64 @@ for p, pat in PATTERNS.iteritems():
 # parse: '( (S (NP (DT This)) (VP (VBZ is) (NP (DT a) (NN test)))) )'
 # this is NN_NN (NP IS NP)
 
+# TODO WHAT IF NN NN
+
+# return a dictionary of PATTERN_TYPE: [wordloc, wordloc, ..]
 def findReplacements(tree, parse):
-    print findWordTypeInTree(tree, 'VERB')
-    """
-    curTag = tree
-    wordmatches = []
+    repls = {}
     for pname, pat in PATTERNS.iteritems():
-        # given a pattern, find it in the tree
-        wordindex = 0
+        # for each pattern, try to find it in the tree
+        repls[pname] = []
+        wi = -1
         for pword in pat.split(" "):
-            for tag in WORD_TYPES(pword):
-                if curTag == tag:   # tag matches, now get the word
-                    if curTag.word is not None:
-                        wordmatches.append(wordindex)
-                        wordindex += 1
-                    else:   # this is a higher-level tag, we need to find the word
-                        while (curTag.word is None):
-                            curTag = curTag.children[0]
-                        wordmatches.append(wordindex)
-                        wordindex += 1
-                    break
-    """
+            loc = findWordTypeInTree(tree, pword)
+            if len(loc) > 0:
+                for l in loc:
+                    print "found type",pword,"at loc",l
+                    if l[0] > wi:
+                        wi = l[0]
+                        repls[pname].append(wi)
+                        break
+                        
+        if len(repls[pname]) != len(pat.split(" ")):
+            # did not find as many words as required by pattern
+            print "NOPE not enough:",repls[pname],"vs",pat
+            repls.pop(pname)
+            
+    print "repls =",repls
+    return repls
 
 # go through tree to find a word associated with a [wordType] tag
 # if successful returns (wordindex, tag), else None
 # this basically does a BFS but wants the lowest-level
 def findWordTypeInTree(curTag, wordType):
-    if curTag.word is not None and curTag.tag.strip() in WORD_TYPES[wordType]:
-        # success
-        return (curTag.wordIndex, curTag.tag.strip())
-    elif curTag.word is None:
-        # check children
+    locs = []
+    if curTag.tag.strip() in WORD_TYPES[wordType]:
+        if curTag.word is not None and curTag.word.strip() != '':
+            # success
+            locs.append((curTag.wordIndex, curTag.tag.strip()))
+        else:
+            # try to find more specific child
+            for c in curTag.children:
+                result = findWordTypeInTree(c, wordType)
+                if len(result) > 0:
+                    # success
+                    locs += result
+            if len(locs) == 0:  # i.e. finding child failed
+                # just try to find a word below this tag
+                # TODO this may be dumb; just goes down through first child
+                temptag = curTag
+                while temptag.word is None or temptag.word.strip() == '':
+                    temptag = temptag.children[0]
+                locs.append((temptag.wordIndex, curTag.tag.strip()))
+    elif curTag.word is None or curTag.word.strip() == '':
+        # curTag does not match but children might
         for c in curTag.children:
             result = findWordTypeInTree(c, wordType)
-            if result is not None:
+            if len(result) > 0:
                 # success
-                return result
-    return None
+                locs += result
+    return locs
                 
 
 # find possible replacement locations given a parse tree and original parse
