@@ -13,10 +13,11 @@ import sys
 VERBOSE = True
 
 class ParseTree:
-    def __init__(self, tag=None, parent=None, word=None):
+    def __init__(self, tag=None, parent=None, word=None, wordIndex=0):
         self.tag = tag
         self.parent = parent
         self.word = word
+        self.wordIndex = wordIndex
         self.children = []
     
     def __str__(self):
@@ -57,6 +58,7 @@ def parseToTree(parse):
     curTag = None
     temp = ''
     i = 0
+    wi = 0
     while (i < len(parse)):
         c = parse[i]
         if c == "(":    # opening tag
@@ -71,6 +73,8 @@ def parseToTree(parse):
         elif c == ")":  # closing tag
             if temp != '':
                 curTag.word = temp
+                curTag.wordIndex = wi
+                wi += 1
                 temp = ''
             if curTag.parent is not None:
                 curTag = curTag.parent
