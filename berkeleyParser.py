@@ -13,17 +13,17 @@ import sys
 VERBOSE = True
 
 class ParseTree:
-    def __init__(self, tag=None, parent=None, children=[], word=None):
+    def __init__(self, tag=None, parent=None, word=None):
         self.tag = tag
         self.parent = parent
-        self.children = children
         self.word = word
+        self.children = []
     
     def __str__(self):
         if self.word is not None:
             return "%s: %s" % (self.tag, self.word)
         else:
-            return "%s: %s" % (self.tag, self.children)
+            return "%s: %s" % (self.tag, [c.__str__() for c in self.children])
         
     def toDict(self):
         # convert tree to dictionary
@@ -51,31 +51,32 @@ def parseToTree(parse):
     
     # parser always has extra layer of parens, remove those
     parse = parse.strip()
-    if parse.startswith("( "):
-        if parse.endswith(" )"):
-            parse = parse[2:-2]
+    if parse.startswith("( ") and parse.endswith(" )"):
+        parse = parse[2:-2]
     
     curTag = None
-    arr = [s.strip() for s in parse.split('(') if s != '']
-    for a in arr:
-        if a.endswith(")"):
-            # we are closing tags
-            parts = [s.strip() for s in a.split(" ")]
-            tagname = parts[0]
-            wordstr = parts[1].strip(")")
-            newTag = ParseTree(tag=tagname, parent=curTag, word=wordstr)
-            curTag.children.append(newTag)
-            newTag.children = []
-            for i in range(a.count(")")):
-                # close tag - go up the tree
-                if curTag.parent is not None:
-                    curTag = curTag.parent
-        else:
-            newTag = ParseTree(tag=a, parent=curTag)
+    temp = ''
+    i = 0
+    while (i < len(parse)):
+        c = parse[i]
+        if c == "(":    # opening tag
+            tn = ''
+            while (parse[i] != ' '):
+                i += 1
+                tn += parse[i]
+            newTag = ParseTree(tag=tn, parent=curTag)
             if curTag is not None:
                 curTag.children.append(newTag)
-                newTag.children = []
             curTag = newTag
+        elif c == ")":  # closing tag
+            if temp != '':
+                curTag.word = temp
+                temp = ''
+            if curTag.parent is not None:
+                curTag = curTag.parent
+        else:   temp += c
+        i += 1
+        
     return curTag
     
 if __name__ == "__main__":
