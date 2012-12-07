@@ -77,7 +77,7 @@ def parseToTree(parse):
                 newTag.children = []
             curTag = newTag
     return curTag
-
+    
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print "Usage: berkeleyParser [phrase]"
@@ -90,8 +90,9 @@ if __name__ == "__main__":
 
         if sys.argv[1] == "-p":
             parse = phrase[2:]
-	else:
+        else:
             parse = parsePhrase(phrase)
+
         if VERBOSE: print parse
         tree = parseToTree(parse)
         if VERBOSE: print tree

@@ -1,86 +1,8 @@
+# master list of metaphor mappings
+
 nounToNoun = {}
 nounToAdj = {}
 nounToVerb = {}
-
-# change is relative motion
-nounToNoun[100191142] = 114004317
-
-# causation is control over relative location
-nounToNoun[100042311] = 100027167
-
-# properties are possessions
-nounToNoun[104916342] = 100032613
-
-# attributes are entities
-nounToNoun[100002684] = 100024264
-
-# entities are attributes
-nounToNoun[100001740] = 105849040
-
-# well-being is wealth
-nounToNoun[114447525] = 105116128
-
-# motion is change
-nounToNoun[107309781] = 113859043
-
-# action is motion
-nounToNoun[100037396] = 107309781
-
-# active is alive
-nounToAdj[114776804] = 300094448
-
-# longterm purposeful activity is a journey
-nounToNoun[100407535] = 100306426
-
-# love is a journey
-nounToNoun[107543288] = 100306426
-
-# career is a journey
-nounToNoun[100282613] = 100306426
-
-# vehicle and person
-nounToNoun[104524313] = 100007846
-
-# person and person
-nounToNoun[100007846] = 100007846
-
-# body and air
-nounToNoun[108436288] = 108653314
-
-# harm is physical injury
-nounToNoun[107420770] = 114285662
-
-# status is position (comparison)
-nounToNoun[113920835] = 113945919
-
-# importance is precendence (comparison)
-nounToNoun[105168261] = 113949802
-
-# competition is a race
-nounToNoun[101168569] = 107472657
-
-# competition is a war
-
-# opportunities are objects
-nounToNoun[114483917] = 100002684
-
-# creating is giving an object
-nounToVerb[100908492] = 202316868
-
-# time is something moving toward you
-nounToNoun[115122231] = 201835496
-
-
-nounToNoun[long(105770926)] = [long(101170962)]
-nounToNoun[long(105805475)] = [long(100803617), long(113465809), long(105710860)] # understanding
-nounToNoun[long(105770926)] = [long(100243918), long(100278810)]
-nounToNoun[long(106252138)] = [long(101057759)]
-nounToNoun[long(100636921)] = [long(100310063)]
-nounToNoun[long(105611302)] = [long(103094503), long(103699975)] # mind
-nounToNoun[long(105833840)] = [long(106362953), long(109917593), long(109918248), long(105750657), long(105154676)] #idea
-nounToNoun[long(105941423)] = [long(103051540), long(109622302), long(110151570), long(114070360)] # belief
-nounToNoun[long(106283764)] = [long(104565375)]
-
 
 nounToAdj = {
 105611302: 300708498, # mind is brittle
@@ -167,3 +89,82 @@ nounToNoun = {
 103094503: 105194578, # obligation is force
 107966140: 105216365, # society is a body
 }
+
+# change is relative motion
+nounToNoun[100191142] = 114004317
+
+# causation is control over relative location
+nounToNoun[100042311] = 100027167
+
+# properties are possessions
+nounToNoun[104916342] = 100032613
+
+# attributes are entities
+nounToNoun[100002684] = 100024264
+
+# entities are attributes
+nounToNoun[100001740] = 105849040
+
+# well-being is wealth
+nounToNoun[114447525] = 105116128
+
+# motion is change
+nounToNoun[107309781] = 113859043
+
+# action is motion
+nounToNoun[100037396] = 107309781
+
+# active is alive
+nounToAdj[114776804] = 300094448
+
+# longterm purposeful activity is a journey
+nounToNoun[100407535] = 100306426
+
+# love is a journey
+nounToNoun[107543288] = 100306426
+
+# career is a journey
+nounToNoun[100282613] = 100306426
+
+# vehicle and person
+nounToNoun[104524313] = 100007846
+
+# person and person
+nounToNoun[100007846] = 100007846
+
+# body and air
+nounToNoun[108436288] = 108653314
+
+# harm is physical injury
+nounToNoun[107420770] = 114285662
+
+# status is position (comparison)
+nounToNoun[113920835] = 113945919
+
+# importance is precendence (comparison)
+nounToNoun[105168261] = 113949802
+
+# competition is a race
+nounToNoun[101168569] = 107472657
+
+# competition is a war
+
+# opportunities are objects
+nounToNoun[114483917] = 100002684
+
+# creating is giving an object
+nounToVerb[100908492] = 202316868
+
+# time is something moving toward you
+nounToNoun[115122231] = 201835496
+
+
+nounToNoun[long(105770926)] = [long(101170962)]
+nounToNoun[long(105805475)] = [long(100803617), long(113465809), long(105710860)] # understanding
+nounToNoun[long(105770926)] = [long(100243918), long(100278810)]
+nounToNoun[long(106252138)] = [long(101057759)]
+nounToNoun[long(100636921)] = [long(100310063)]
+nounToNoun[long(105611302)] = [long(103094503), long(103699975)] # mind
+nounToNoun[long(105833840)] = [long(106362953), long(109917593), long(109918248), long(105750657), long(105154676)] #idea
+nounToNoun[long(105941423)] = [long(103051540), long(109622302), long(110151570), long(114070360)] # belief
+nounToNoun[long(106283764)] = [long(104565375)]
