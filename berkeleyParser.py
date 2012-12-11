@@ -1,18 +1,17 @@
 # Berkeley Parser interface
 # requires:
-# berkeleyParser.jar (in same folder)
-# java installed
-
-#example BerkeleyParser command-line usage:
-#echo %s | java -jar berkeleyParser.jar -gr eng_sm6.gr"
+# - berkeleyParser.jar (in same folder)
+# - java installed
 
 import subprocess
 import os
 import sys
+from optparse import OptionParser
 
 VERBOSE = True
 
 class ParseTree:
+    '''class to hold parse information'''
     def __init__(self, tag=None, parent=None, word=None, wordIndex=0):
         self.tag = tag
         self.parent = parent
@@ -27,7 +26,7 @@ class ParseTree:
             return "%s: %s" % (self.tag, [c.__str__() for c in self.children])
         
     def toDict(self):
-        # convert tree to dictionary
+        '''convert tree to dictionary'''
         d = {}
         if self.word is None:
             d[self.tag] = []
@@ -38,7 +37,7 @@ class ParseTree:
         return d
 
 def parsePhrase(phrase):
-    # get parse from BerkeleyParser
+    '''Returns a parse of a phrase'''
     # python 2.7+
     #parse = subprocess.check_output(['echo %s'%phrase, '| java', '-jar', 'berkeleyParser.jar', '-gr', 'eng_sm6.gr'])
     # python < 2.7
@@ -47,9 +46,18 @@ def parsePhrase(phrase):
     process.close()
     return parse
 
-def parseToTree(parse):
-    # example parse: '( (S (NP (DT This)) (VP (VBZ is) (NP (DT a) (NN test)))) )'
+def parseFile(inputfile, outputFile=None):
+    '''Parse sentences in a file, optionally writing output to another file'''
+    pstr = "java -jar berkeleyParser.jar -gr eng_sm6.gr -inputFile %s" % inputfile
+    if outputFile is not None:
+        pstr += " -outputFile %s" % outputFile
+    process = os.popen(pstr)
+    result = process.read()
+    process.close()
+    return result
     
+def parseToTree(parse):
+    '''Convert a parse to a ParseTree'''
     # parser always has extra layer of parens, remove those
     parse = parse.strip()
     if parse.startswith("( ") and parse.endswith(" )"):
@@ -83,23 +91,31 @@ def parseToTree(parse):
         
     return curTag
     
+# command-line entry
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print "Usage: berkeleyParser [phrase]"
+    op = OptionParser()
+    op.add_option("-p", "--phrase", dest="phrase", help="simple phrase to parse")
+    op.add_option("-i", "--input",  dest="inputfile", help="file containing sentences to parse")
+    op.add_option("-o", "--output", dest="outputfile", help="file to store parse output")
+    op.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="print result to stdout")
+    (options, args) = op.parse_args()
+    
+    if not options.phrase and not options.inputfile:
+        print op.print_help()
         sys.exit(0)
-    else:
-        phrase = ''
-        for arg in sys.argv[1:]:
-            phrase += arg + " "
-        phrase = phrase[:-1]
-
-        if sys.argv[1] == "-p":
-            parse = phrase[2:]
+    
+    if options.phrase:
+        result = parsePhrase(options.phrase)
+        print result
+        if options.verbose:
+            tree = parseToTree(parse)
+            print "Tree:", tree
+            d = tree.toDict()
+            print "Dict:", d
+    
+    if options.inputfile:
+        result = parseFile(options.inputfile, options.outputfile)
+        if options.verbose and options.outputfile:
+            print "wrote parse to %s" % options.outputfile
         else:
-            parse = parsePhrase(phrase)
-
-        if VERBOSE: print parse
-        tree = parseToTree(parse)
-        if VERBOSE: print tree
-        d = tree.toDict()
-        if VERBOSE: print d
+            print result

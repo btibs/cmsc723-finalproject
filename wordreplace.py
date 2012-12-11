@@ -1,21 +1,15 @@
-# find suitable words in a sentence to replace
+# find suitable words in a sentence to replace, given the parse of the sentence
 
-import berkeleyParser
+from berkeleyParser import parseToTree
 from MetaphorMapping import nounToNoun, nounToAdj#, nounToVerb
 import re
 import sys
 
-"""
-[NN] is a [NN] (Noun is metaphor)
-[NN] [VV] (Verb is metaphor)
-[JJ] [NN] or [NN] is [JJ] (Adjective is metaphor)
-"""
-
 PATTERNS = {
-    'NN_NN': 'NOUN IS NOUN',
-    'NN_VV': 'NOUN VERB',
-    'JJ_NN': 'NOUN ADJ',
-    'NN_JJ': 'NOUN IS ADJ',
+    'NN_NN': 'NOUN IS NOUN',    # noun2 is metaphor
+    'NN_VV': 'NOUN VERB',       # verb is metaphor
+    'JJ_NN': 'NOUN ADJ',        # adjective is metaphor
+    'NN_JJ': 'NOUN IS ADJ',     # adjective is metaphor
 }
 WORD_TYPES = {
     'ADJ':  ['ADJP', 'JJ', 'JJR', 'JJS'],
@@ -32,18 +26,14 @@ for p, pat in PATTERNS.iteritems():
         if s.find(w) >= 0:
             s = s.replace(w, "(" + '|'.join(wtags) + ")")
     #print s
-
-'''
-prints:
-(NP|NN|NNS|NNP|NNPS|PRP) (ADJP|JJ|JJR|JJS)
-(NP|NN|NNS|NNP|NNPS|PRP) (VP|VB|VBD|VBG|VBN|VBP|VBZ)
-(NP|NN|NNS|NNP|NNPS|PRP) (is|are|am|was|were) (NP|NN|NNS|NNP|NNPS|PRP)
-(NP|NN|NNS|NNP|NNPS|PRP) (is|are|am|was|were) (ADJP|JJ|JJR|JJS)
-'''
 """
 
 # return a dictionary of PATTERN_TYPE: [wordloc, wordloc, ..]
 def findReplacements(tree, parse):
+    '''
+    Find candidates for replacement based on give patterns and word types
+    Returns a dictionary of {PATTERN_TYPE: [wordloc, wordloc, ...], ...}
+    '''
     repls = {}
     for pname, pat in PATTERNS.iteritems():
         # for each pattern, try to find it in the tree
@@ -64,10 +54,11 @@ def findReplacements(tree, parse):
             
     return repls
 
-# go through tree to find a word associated with a [wordType] tag
-# if successful returns (wordindex, tag), else None
-# this basically does a BFS but wants the lowest-level
 def findWordTypeInTree(curTag, wordType):
+    '''
+    Find a word of given wordType in a parse tree, starting at the current tag, similar to BFS
+    If successful, returns [(wordindex, tag),...], else []
+    '''
     locs = []
     if curTag.tag.strip() in WORD_TYPES[wordType]:
         if curTag.word is not None and curTag.word.strip() != '': # success
@@ -89,10 +80,11 @@ def findWordTypeInTree(curTag, wordType):
             result = findWordTypeInTree(c, wordType)
             if len(result) > 0: # success
                 locs += result
+    print "LOCS",locs
     return locs
                 
-# recover sentence from a dictionary
 def dictToSentence(d):
+    '''Recover original sentence from parse dictionary'''
     s = ''
     for k,v in d.iteritems():
         if type(v) == type([]):
@@ -104,35 +96,23 @@ def dictToSentence(d):
             s += s.strip() + " " + v
     return s.strip()
     
-# command-line usage
+# command-line demo
 if __name__ == "__main__":
     VERBOSE = True
     if len(sys.argv) < 2:
-        #print "Usage: wordreplace [parse]"
-        #sys.exit(0)
-        
-        # If no args, use sentence "This is a test"
-        # parse: '( (S (NP (DT This)) (VP (VBZ is) (NP (DT a) (NN test)))) )'
-        # dict: {'S': [{'NP': [{'DT': 'This'}]}, {'VP': [{'VBZ': 'is'}]}, {'NP': [{'DT': 'a'}]}, {'NN': 'test'}]}
-        # this is NN_NN (NP IS NP)
-        
-        parse = '( (S (NP (DT This)) (VP (VBZ is) (NP (DT a) (NN test)))) )'
+        print "Usage: wordreplace [parse]"
+        sys.exit(0)
     else:
         phrase = ''
         for arg in sys.argv[1:]:
             phrase += arg + " "
-        phrase = phrase[:-1]
+        parse = phrase[:-1]
         
-        # skip this, takes too long
-        #parse = berkeleyParser.parsePhrase(phrase)
-        #if VERBOSE: print parse
-        parse = phrase
+        tree = parseToTree(parse)
+        if VERBOSE: print tree
         
-    tree = berkeleyParser.parseToTree(parse)
-    if VERBOSE: print tree
-    
-    d = tree.toDict()
-    if VERBOSE: print d
-    
-    replacements = findReplacements(tree, parse)
-    print "found replacements:",replacements
+        d = tree.toDict()
+        if VERBOSE: print d
+        
+        replacements = findReplacements(tree, parse)
+        print "found replacements:",replacements
