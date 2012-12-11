@@ -108,7 +108,7 @@ if __name__ == "__main__":
         result = parsePhrase(options.phrase)
         print result
         if options.verbose:
-            tree = parseToTree(parse)
+            tree = parseToTree(result)
             print "Tree:", tree
             d = tree.toDict()
             print "Dict:", d
