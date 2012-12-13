@@ -23,7 +23,7 @@ class ParseTree:
         if self.word is not None:
             return "%s: %s" % (self.tag, self.word)
         else:
-            return "%s: %s" % (self.tag, [c.__str__() for c in self.children])
+            return "%s: [%s]" % (self.tag, ", ".join([str(c) for c in self.children]))
         
     def toDict(self):
         '''convert tree to dictionary'''

@@ -114,4 +114,7 @@ if __name__ == "__main__":
         if VERBOSE: print d
         
         replacements = findReplacements(tree, parse)
-        print "found replacements:",replacements
+        print "found replacements:"
+        s = dictToSentence(d)
+        for k,vals in replacements.iteritems():
+            print k, ["%s: %s"%(v,s.split(" ")[v]) for v in vals]
