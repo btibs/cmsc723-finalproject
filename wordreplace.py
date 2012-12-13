@@ -8,7 +8,7 @@ import sys
 PATTERNS = {
     'NN_NN': 'NOUN IS NOUN',    # noun2 is metaphor
     'NN_VV': 'NOUN VERB',       # verb is metaphor
-    'JJ_NN': 'NOUN ADJ',        # adjective is metaphor
+    'JJ_NN': 'ADJ NOUN',        # adjective is metaphor
     'NN_JJ': 'NOUN IS ADJ',     # adjective is metaphor
 }
 WORD_TYPES = {
@@ -80,7 +80,6 @@ def findWordTypeInTree(curTag, wordType):
             result = findWordTypeInTree(c, wordType)
             if len(result) > 0: # success
                 locs += result
-    print "LOCS",locs
     return locs
                 
 def dictToSentence(d):
