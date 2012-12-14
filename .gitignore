@@ -1,2 +1,10 @@
+# ignore compiled files
 *.pyc
+
+# ignore backup files
 *~
+
+# ignore TeX output files
+*.pdf
+*.aux
+*.log

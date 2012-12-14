@@ -1,27 +1,110 @@
 \documentclass[12pt]{article}
 \usepackage[pdftex]{graphicx}
+\usepackage[utf8]{inputenc}
 \usepackage{comment}
-
+\usepackage{amsmath}
+\title{CMSC 723 - Computational Linguistics I, Fall 2012\\
+Final Project: Metaphor Generation}
+\author{Joshua Bradley, Isaac Julien, \& Elizabeth McNany}
+\date{December 16, 2012}
 \begin{document}
-
-\begin{center}
-CMSC 723: Computational Linguistics I, Fall 2012\\
-Final Project - Metaphor Generation\\
-Isaac Julien, Josh Bradley, \& Beth McNany\\
-\end{center}
+  \maketitle
 
 \begin{comment}
 % How to include a picture
-
 \includegraphics[scale=0.5]{BreakingRules.png}
-
 \end{comment}
 
-Put abstract here. Put abstract here.
+\begin{center}
+\small
+\textsc{Abstract}: Abstract goes here
+\end{center}
 
 \section{Introduction}
-This is our project.
+
+Metaphors are one of the most powerful elements of language. On a larger scale, it has been argued that all of language is a metaphor in some sense. Metaphors exist throughout all languages and even affect our thoughts and actions. This is the main motivation for studying metaphors Intro. to metaphors and the general problem they pose in NLP.
+
+\section{Related Work}
+
+Work on metaphors began as early as the 1980s \cite{lakoff80}. Lakoff and Johnson. There has been quite a bit of work done on metaphors, with the main focus being on metaphor identification. Discuss work done on metaphor identification and the "small" amount of work that has been done on generating metaphors.
+
+\section{WordNET}
+
+Description of wordNET
+
+\section{Metaphor-Annotated Corpus}
+
+Description of the metaphor-annotated corpus.
+
+\section{Berkeley Parser}
+
+We are using the Berkeley Parser for parsing the input sentences.  We wrote a Python interface to the parser which allowed us to get output parses for phrases or input files.  The parser output is then converted into a tree and processed by another script to determine locations for potential metaphors.
+
+We have identified three basic grammatical structures for metaphors: ``NOUN is NOUN'', ``NOUN VERB'', and ``ADJ NOUN'' or ``NOUN is ADJ''.  Examples of each type of metaphor are given in Table \ref{tab:metaphorexamples}.
+
+\begin{table}[h]
+	\centering
+	\small
+	\begin{tabular}{|l|l|l|} \hline
+		Pattern & Metaphor & Example\\	\hline
+		NOUN1 is NOUN2 & NOUN2 & That person is a pig.\\ \hline
+		NOUN VERB & VERB & She flew down the stairs.\\ \hline
+		ADJ NOUN or NOUN is ADJ & ADJ & The used-car salesman is slimy.\\ \hline
+	\end{tabular}
+	\caption{This table}
+	\label{tab:metaphorexamples}
+\end{table}
+
+We search for these example patterns in the parse from the input sentence and if successful return the pattern found and positions of the relevant words.  This information is then passed to the WordNet interface to determine appropriate metaphorical substitutions for the words.
+
+\section{General Model}
+
+Detailed outline and description of the general model that has been constructed in order to enable sufficient metaphor generation. Include discussion on conceptual mapping here.
+
+\section{Results}
+
+No results yet...come back later.
 
 \section{Conclusion}
 The end.
+
+
+
+% Bibliography Section
+\begin{thebibliography}{9}
+
+\bibitem{shutova101}
+  E. Shutova, L. Sun, and A. Korhonen,
+  \emph{Metaphor Identification Using Verb and Noun Clustering}.
+  In Proceedings of COLING 2010,
+  Beijing, China.
+  
+\bibitem{shutova102}
+  E. Shutova,
+  \emph{Models of Metaphor in NLP},
+  In Proceedings of ACL 2010,
+  Uppsala, Sweden.
+  
+\bibitem{lakoff80}
+  G. Lakoff, M. Johnson
+  \emph{Metaphors We Live By},
+  University of Chicago Press, 1980.
+
+\bibitem{steen12}
+  J. Herrmann, et al.,
+  \emph{VU Amsterdam Metaphor Corpus},
+  University of Oxford, 2012.
+
+\bibitem{mason04}
+  Z. Mason,
+  \emph{CorMet: A Computational, Corpus-Based Conventional Metaphor Extraction System},
+  Brandeis University, 2004.
+
+\bibitem{lakoff89}
+  G. Lakoff, J. Espenson, A. Goldberg,
+  \emph{Master Metaphor List},
+  University of California at Berkley, 1989.
+
+\end{thebibliography}
+
 \end{document}
