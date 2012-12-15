@@ -3,9 +3,11 @@
 \usepackage[utf8]{inputenc}
 \usepackage{comment}
 \usepackage{amsmath}
+\usepackage{float}
+\restylefloat{table}
 
-\title{CMSC 723 - Computational Linguistics I, Fall 2012\\
-Final Project: Metaphor Generation}
+\title{CMSC 723 Final Project\\
+Metaphor Generation}
 \author{Joshua Bradley, Isaac Julien, \& Elizabeth McNany}
 \date{December 16, 2012}
 \begin{document}
@@ -18,14 +20,15 @@ Final Project: Metaphor Generation}
 
 \section{Introduction}
 
-Metaphors are one of the most powerful elements of language. On a larger scale, it has been argued that all of language is a metaphor in some sense. Metaphors exist throughout all languages and even affect our thoughts and actions. This is the main motivation for studying metaphors Intro. to metaphors and the general problem they pose in NLP.
+Metaphors have often been thought of as just rhetorical flourish, however when analyzed in a more abstract manner, they are also one of the most powerful elements of language. Of all theories surrounding metaphors, one of the most popularly accepted is the Conceptual Metaphor Theory \cite{lakoff80}. Lakoff and Johnson argue that on a grand scale, all of language is a metaphor to some degree \ldots that our conceptual system (how we perceive reality) is largely metaphorical. Metaphors affect our thoughts and actions, and "structure our perceptions and understanding". Since \cite{lakoff80}, the study of metaphors has become a topic of interest. Throughout NLP, metaphors are known to be a crux of disambiguation, which has motivated research efforts toward metaphor identification. In this paper, we have taken a different approach to studying metaphor. We use the Conceptual Metaphor Theory to construct a model for \emph{generating} metaphors.
 
 \section{Related Work}
 
-Work on metaphors began as early as the 1980s \cite{lakoff80}. Lakoff and Johnson. There has been quite a bit of work done on metaphors, with the main focus being on metaphor identification. Discuss work done on metaphor identification and the "small" amount of work that has been done on generating metaphors.
+Work on metaphors began as early as the 1980s \cite{lakoff80}. Lakoff and Johnson. There has been quite a bit of work done on metaphors, with the main focus being on metaphor identification. Discuss work done on metaphor identification and the ``small'' amount of work that has been done on generating metaphors.
 
 \section{Background}
-These are the components that we are using from other people's work.
+
+Our system makes use of several components from other research, namely: WordNet, for word definitions and relations; and the Berkeley Parser, for part-of-speech tagging and parsing input sentences.
 
 \subsection{WordNet}
 
@@ -40,15 +43,12 @@ The primary relation between noun synsets is hypernymy (Figure \ref{fig:wordnett
 	\label{fig:wordnettree}
 \end{figure}
 
-\subsection{Metaphor-Annotated Corpus}
-
-Description of the metaphor-annotated corpus.
-
 \subsection{Berkeley Parser}
 \label{sec:berkeleyparser}
 
-We are using the Berkeley Parser \cite{berkeleyparser} for parsing the input sentences.  The Berkeley Parser uses a PCFG
-In order to efficiently handle the large number of input sentences for testing, we wrote a Python interface to the parser that returns output parses for given phrases or input files.  The Berkeley Parser output is then converted into a parse tree suitable for use in the remainder of processing.
+We are using the Berkeley Parser \cite{berkeleyparser} for parsing the input sentences.  The Berkeley Parser uses a probabilistic context-free grammar to generate and find the most likely parse tree for an input sentence or phrase.  A full parse, as opposed to part of speech tagging only, is desirable for the task of metaphor generation so that the structure can be used to find relevant words, especially in sentences with multiple phrases or clauses.  This process is described in greater detail in Section \ref{sec:identtarget}.
+
+In order to efficiently handle the large number of input sentences for testing, we wrote a Python interface to the parser that returns output parses for given phrases or input files.  The parser output is then converted into a parse tree suitable for use in the remainder of processing.
 
 \section{General Model}
 
@@ -62,7 +62,7 @@ A conceptual schematic of our metaphor generation model is included as Figure \r
 \end{figure}
 
 \subsection{Identifying Target Word}
-
+\label{sec:identtarget}
 In order to identify an appropriate target word to replace with a metaphor, we focused on detecting three basic grammatical structures for metaphors: ``NOUN is NOUN'', ``NOUN VERB'', and ``ADJ NOUN'' or ``NOUN is ADJ''.  Examples of each type of metaphor are given in Table \ref{tab:metaphorexamples}.
 
 \begin{table}[h]
@@ -144,7 +144,7 @@ We find that our system does produce some sentences that include genuine, insigh
 \begin{table}[h]
 	\centering
 	\small
-	\begin{tabular}{|c|p{10cm}|} \hline
+	\begin{tabular}{|c|p{12cm}|} \hline
 		\textbf{Category} & \textbf{Description}\\ \hline
 		1 & Metaphor usage makes sense; one would not be surprised to hear a person use this metaphor\\ \hline
         2 & Metaphor is understandable and possibly interesting but strange; one wouldn’t expect a person to use this metaphor\\ \hline
@@ -156,7 +156,7 @@ We find that our system does produce some sentences that include genuine, insigh
 
 Table \ref{tab:results} shows some of the more interesting outputs that fall under each category. The first line of each sample is the original definition, and the second is the definition after a word is replaced with a metaphorical equivalent.
 
-\begin{table}[h]
+\begin{table}[H]
 	\centering
 	\small
 	\begin{tabular}{|c|p{12cm}|} \hline
@@ -170,14 +170,8 @@ Table \ref{tab:results} shows some of the more interesting outputs that fall und
         \medskip
         A desire is the feeling that accompanies an unsatisfied state.\par
         A desire is the famishment that accompanies an unsatisfied state.\par
-        \medskip
-        A hero is a man distinguished by exceptional courage and nobility and strength.\par
-        A hero is a giant distinguished by exceptional courage and nobility and strength.\par
-		\\ \hline
+        \\ \hline
         2 & 
-        An expert is a person with special knowledge or ability who performs skillfully.\par
-        An expert is a temple with special knowledge or ability who performs skillfully.\par
-        \medskip       	
         A psychologist is a scientist trained in psychology.\par
         A psychologist is a work animal trained in psychology.\par
         \medskip
@@ -188,8 +182,8 @@ Table \ref{tab:results} shows some of the more interesting outputs that fall und
         Nationalism is the costume that your national culture is superior to any other.\par
         \\ \hline
 		3 & 
-		A magnitude is the property of relative size or extent (whether large or small).\par
-        A magnitude is the property of relative peanut or extent (whether large or small).\par
+		A magnitude is the property of relative size or extent.\par
+        A magnitude is the property of relative peanut or extent.\par
         \medskip
         A king is a male sovereign; ruler of a kingdom.\par
         A king is a male female; ruler of a kingdom.\par
@@ -201,17 +195,32 @@ Table \ref{tab:results} shows some of the more interesting outputs that fall und
         A chemist is a rotisserie who specializes in chemistry.\par
 		\\ \hline
 	\end{tabular}
-	\caption{Metaphor evaluation categories.}
+	\caption{Example original and generated metaphors for each category.}
 	\label{tab:results}
 \end{table}
 
-We labeled 12 sentences as belonging to Category 1, 13 as belonging to Category 2, and the remaining 174 as Category 3. Of the sentences in Category 3, many contain obscure words.
+In addition to our own evaluation, we also asked four human readers to categorize each of the 199 generated sentences (Table \ref{tab:catresults}).
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|l|c|c|c|} \hline
+\textbf{Evaluator} & \textbf{Category 1} & \textbf{Category 2} & \textbf{Category 3} \\ \hline
+Us & 18 & 26 & 155\\ \hline
+Reader 1 & 31 & 53 & 115\\ \hline
+Reader 2 & 12 & 19 & 168\\ \hline
+Reader 3 & 15 & 46 & 139\\ \hline
+Reader 4 & 16 & 47 & 137\\ \hline
+\textbf{Average Percent} & \textbf{9.2} & \textbf{19.2} & \textbf{71.6} \\ \hline
+\end{tabular}
+\caption{Metaphor categorization results.}
+\label{tab:catresults}
+\end{table}
 
 \section{Conclusion}
 The end.
 
-
-
+\newpage
 % Bibliography Section
 \begin{thebibliography}{9}
 
