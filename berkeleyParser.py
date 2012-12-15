@@ -73,7 +73,7 @@ def parseToTree(parse):
             tn = ''
             while (parse[i] != ' '):
                 i += 1
-                tn += parse[i]
+                tn += parse[i]  # index error sometimes: expecting (TAG word) not (TAG (word)) format
             newTag = ParseTree(tag=tn, parent=curTag)
             if curTag is not None:
                 curTag.children.append(newTag)

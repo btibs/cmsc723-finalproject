@@ -10,11 +10,6 @@ Final Project: Metaphor Generation}
 \begin{document}
   \maketitle
 
-\begin{comment}
-% How to include a picture
-\includegraphics[scale=0.5]{BreakingRules.png}
-\end{comment}
-
 \begin{center}
 \small
 \textsc{Abstract}: Abstract goes here
@@ -28,19 +23,37 @@ Metaphors are one of the most powerful elements of language. On a larger scale, 
 
 Work on metaphors began as early as the 1980s \cite{lakoff80}. Lakoff and Johnson. There has been quite a bit of work done on metaphors, with the main focus being on metaphor identification. Discuss work done on metaphor identification and the "small" amount of work that has been done on generating metaphors.
 
-\section{WordNET}
+\section{Background}
+These are the components that we are using from other people's work.
 
-Description of wordNET
+\subsection{WordNet}
 
-\section{Metaphor-Annotated Corpus}
+Description of WordNet
+
+\subsection{Metaphor-Annotated Corpus}
 
 Description of the metaphor-annotated corpus.
 
-\section{Berkeley Parser}
+\subsection{Berkeley Parser}
+\label{sec:berkeleyparser}
 
-We are using the Berkeley Parser for parsing the input sentences.  We wrote a Python interface to the parser which allowed us to get output parses for phrases or input files.  The parser output is then converted into a tree and processed by another script to determine locations for potential metaphors.
+We are using the Berkeley Parser \cite{berkeleyparser} for parsing the input sentences.  The Berkeley Parser uses a PCFG
+In order to efficiently handle the large number of input sentences for testing, we wrote a Python interface to the parser that returns output parses for given phrases or input files.  The Berkeley Parser output is then converted into a parse tree suitable for use in the remainder of processing.
 
-We have identified three basic grammatical structures for metaphors: ``NOUN is NOUN'', ``NOUN VERB'', and ``ADJ NOUN'' or ``NOUN is ADJ''.  Examples of each type of metaphor are given in Table \ref{tab:metaphorexamples}.
+\section{General Model}
+
+A conceptual schematic of our metaphor generation model is included as Figure \reg{fig:schematic}.  Our system first takes an input sentence and parses it as described in section \ref{sec:berkeleyparser}.  Using the resulting parse tree, a target word for metaphorical replacement is identified, based on several common grammatical structures of metaphor.  Then, using WordNet and a list of conceptual mappings, a replacement for the target word is found, giving a metaphorical output sentence.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.60]{schematic.png}
+	\caption{Conceptual schematic for metaphor generation, from input sentence to output.}
+	\label{fig:schematic}
+\end{figure}
+
+\subsection{Identifying Target Word}
+
+In order to identify an appropriate target word to replace with a metaphor, we focused on detecting three basic grammatical structures for metaphors: ``NOUN is NOUN'', ``NOUN VERB'', and ``ADJ NOUN'' or ``NOUN is ADJ''.  Examples of each type of metaphor are given in Table \ref{tab:metaphorexamples}.
 
 \begin{table}[h]
 	\centering
@@ -51,15 +64,24 @@ We have identified three basic grammatical structures for metaphors: ``NOUN is N
 		NOUN VERB & VERB & She flew down the stairs.\\ \hline
 		ADJ NOUN or NOUN is ADJ & ADJ & The used-car salesman is slimy.\\ \hline
 	\end{tabular}
-	\caption{This table}
+	\caption{Basic metaphor patterns and examples.}
 	\label{tab:metaphorexamples}
 \end{table}
 
+Using the parse 
+
 We search for these example patterns in the parse from the input sentence and if successful return the pattern found and positions of the relevant words.  This information is then passed to the WordNet interface to determine appropriate metaphorical substitutions for the words.
 
-\section{General Model}
+\subsection{Conceptual Mapping}
 
-Detailed outline and description of the general model that has been constructed in order to enable sufficient metaphor generation. Include discussion on conceptual mapping here.
+talk about wn tree stuff (Figure \ref{wnmapping}).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.65]{wordnetmapping.png}
+	\caption{Conceptual schematic for finding metaphorical substitutions via WordNet, given a candidate input word.}
+	\label{fig:wnmapping}
+\end{figure}
 
 \section{Results}
 
@@ -104,6 +126,17 @@ The end.
   G. Lakoff, J. Espenson, A. Goldberg,
   \emph{Master Metaphor List},
   University of California at Berkley, 1989.
+  
+\bibitem{berkeleyparser}
+  S. Petrov, L. Barrett, R. Thibaux, D. Klein,
+  \emph{Learning Accurate, Compact, and Interpretable Tree Annotation},
+  In Proceedings of COLING-ACL, 2006.
+
+%todo: this may not be the best citation?  
+\bibitem{wordnet}
+  G. Miller,
+  \emph{WordNet: A Lexical Database for English},
+  Communications of the ACM Vol. 38, No. 11: 39-41, 1995.
 
 \end{thebibliography}
 

@@ -8,3 +8,12 @@
 *.pdf
 *.aux
 *.log
+
+# ignore pictures
+*.png
+*.svg
+*.eps
+
+# other things to ignore
+*.doc
+*.docx
