@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{comment}
 \usepackage{amsmath}
+
 \title{CMSC 723 - Computational Linguistics I, Fall 2012\\
 Final Project: Metaphor Generation}
 \author{Joshua Bradley, Isaac Julien, \& Elizabeth McNany}
@@ -28,7 +29,16 @@ These are the components that we are using from other people's work.
 
 \subsection{WordNet}
 
-Description of WordNet
+WordNet is a ``large lexical database of English'' \cite{wordnet}. The fundamental unit in WordNet is a synset, a cognitively synonymous group of words. Each synset may include a definition and example sentence, as well as lexical and semantic links to other synsets. These links distinguish WordNet from an ordinary dictionary or thesaurus by identifying relationships between words and concepts other than synonymy.
+
+The primary relation between noun synsets is hypernymy (Figure \ref{fig:wordnettree}). A noun \emph{NOUN1} is a hypernym of some other noun \emph{NOUN2} if \emph{NOUN2} is a type of \emph{NOUN1}. For instance, a \emph{dog} is a type of \emph{canine}, so \emph{canine} is a hypernym of \emph{dog}, and \emph{dog} is a hyponym of \emph{canine}. WordNet nouns form a hypernym tree, with synsets at the top having a more general meaning (``entity''), and synsets lower down in the tree having more specific meaning (``Cardigan Welsh Corgi'').
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.65]{wordnet-tree.png}
+	\caption{The WordNet hypernym tree.}
+	\label{fig:wordnettree}
+\end{figure}
 
 \subsection{Metaphor-Annotated Corpus}
 
@@ -42,7 +52,7 @@ In order to efficiently handle the large number of input sentences for testing, 
 
 \section{General Model}
 
-A conceptual schematic of our metaphor generation model is included as Figure \reg{fig:schematic}.  Our system first takes an input sentence and parses it as described in section \ref{sec:berkeleyparser}.  Using the resulting parse tree, a target word for metaphorical replacement is identified, based on several common grammatical structures of metaphor.  Then, using WordNet and a list of conceptual mappings, a replacement for the target word is found, giving a metaphorical output sentence.
+A conceptual schematic of our metaphor generation model is included as Figure \ref{fig:schematic}.  Our system first takes an input sentence and parses it as described in section \ref{sec:berkeleyparser}.  Using the resulting parse tree, a target word for metaphorical replacement is identified, based on several common grammatical structures of metaphor.  Then, using WordNet and a list of conceptual mappings, a replacement for the target word is found, giving a metaphorical output sentence.
 
 \begin{figure}[h]
 	\centering
@@ -58,8 +68,8 @@ In order to identify an appropriate target word to replace with a metaphor, we f
 \begin{table}[h]
 	\centering
 	\small
-	\begin{tabular}{|l|l|l|} \hline
-		Pattern & Metaphor & Example\\	\hline
+	\begin{tabular}{|l|c|l|} \hline
+		\textbf{Pattern} & \textbf{Metaphor} & \textbf{Example}\\	\hline
 		NOUN1 is NOUN2 & NOUN2 & That person is a pig.\\ \hline
 		NOUN VERB & VERB & She flew down the stairs.\\ \hline
 		ADJ NOUN or NOUN is ADJ & ADJ & The used-car salesman is slimy.\\ \hline
@@ -74,7 +84,9 @@ We search for these example patterns in the parse from the input sentence and if
 
 \subsection{Conceptual Mapping}
 
-talk about wn tree stuff (Figure \ref{wnmapping}).
+\subsubsection{Candidate Generation}
+
+At this point we have selected a target word in some context to replace. We would like to apply our conceptual mapping from literal to metaphorical domains. This first requires finding a possible conceptual mapping from our target word. To do this, we find a WordNet synset for this word, and then move up the hypernym tree until we either find a synset in the mapping or reach the top of the tree. If we find a synset in the mapping, then we know that the concept expressed by the original word can be expressed metaphorically by one or several other concepts. For each of these mapped-to concepts, we select all of the synsets in the subtree rooted at that concept as candidate replacements (Figures \ref{fig:wnmapping}, \ref{fig:wnmapexample}); in other words, all hyponyms of the concept.
 
 \begin{figure}[h]
 	\centering
@@ -83,9 +95,117 @@ talk about wn tree stuff (Figure \ref{wnmapping}).
 	\label{fig:wnmapping}
 \end{figure}
 
+This immediately runs into the problem of word sense disambiguation; given a word ``knight'', we must decide if this word means ``a person of noble birth'' or ``a chess piece shaped to resemble the head of a horse''. One option is to select a sense based on frequency, using tag count, a measure of the number of times a particular sense is tagged in a certain corpus. This approach, the most common sense heuristic, is a difficult baseline to beat for WSD \cite{mccarthy}. However, we find it problematic because of inconsistency in the tag counts. Instead, we select all possible synsets sharing the same part of speech as the target word, and assume that when we later evaluate possible replacement words, erroneous senses are more likely to be filtered out.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{wordnet-replacement.png}
+	\caption{Example of selecting all candidate replacement words.}
+	\label{fig:wnmapexample}
+\end{figure}
+
+\subsubsection{Final Selection}
+
+We now need to choose one of the possible replacement words from potentially large set of candidates. Each candidate is a synset in WordNet, which includes a gloss (definition) and possibly example sentences. Our approach is to choose the candidate whose gloss and example sentence overlap the most with the context of the target word in its original text.
+
+We explore two approaches. The first is the Jaccard Similarity of the context of the candidate word, which is the set of words in the gloss and example sentences, and the context of the target word, which is the set of words in the same sentence. We remove stop words from the contexts and calculate the Jaccard Similarity. If $C_c$ is the set of words in the context of the candidate word, and $C_t$ is the set of words in the context of the replacement word, this is $(C_c \cap C_t) / (C_c \cup C_t)$.
+
+The second attempts to measure the semantic similarity of words in $C_c$ and $C_t$. Shortest Ancestral Path \(SAP\) is a measure of semantic similarity based on the intuition that words close together in the WordNet hypernym tree are likely to be closely related. For example, in Figure \ref{fig:wnmapexample}, we would expect ``cat'' to be more closely related to ``dog'' than to ``worker''. We implement a similarity metric between $C_c$ and $C_t$ that considers the average SAP between all pairs of words in $C_c \times C_t$.
+
+Since calculating SAP for all pairs of words is computationally expensive, we first limit the set of candidate words by requiring a Jaccard Similarity above some threshold. However, in the end, both methods give very similar results.
+
+\subsubsection{Adjectives and Verbs}
+
+The method outlined above will work when the target word is a noun. When the target word is an adjective or a verb, we have to do a little more work. WordNet includes a ``derivationally related form'' link which connects lexically related words across parts of speech, such as ``work'' and ``worker''. When the target word is not a noun, we follow this link to a noun, perform the method above with that noun, and finally convert back to the original part of speech by search for derivationally related forms of the best candidate noun with the correct part of speech.
+
 \section{Results}
 
-No results yet...come back later.
+\subsubsection{Data}
+We evaluated our system on 829 definitions from WordNet synsets. Definitions are ideal for testing because they are of the form:
+
+\begin{center}
+    \emph{Account: a record or narrative description of past events.}
+\end{center}
+
+From which it is easy to generate a sentence like:
+
+\begin{center}
+    \emph{An account is a record or narrative description of past events.}
+\end{center}
+
+We can then attempt to replace the second noun in the definition (``account'') with a metaphorical equivalent, using the rest of the definition as context. Our system generates 199 metaphors as outlined above.
+
+\subsubsection{Evaluation}
+
+As noted in the related work section, people often debate what exactly constitutes a metaphor, and evaluating each output of our system as ``right'' or ``wrong'' is difficult. This section includes our own evaluation of the output, as well as the evaluation of other human readers.
+
+We find that our system does produce some sentences that include genuine, insightful uses of metaphor. The rest of the sentences range from interesting and strange to absurd and comical. We divide the results into three categories, described in Table \ref{tab:evalcats}.
+
+\begin{table}[h]
+	\centering
+	\small
+	\begin{tabular}{|c|p{10cm}|} \hline
+		\textbf{Category} & \textbf{Description}\\ \hline
+		1 & Metaphor usage makes sense; one would not be surprised to hear a person use this metaphor\\ \hline
+        2 & Metaphor is understandable and possibly interesting but strange; one wouldn’t expect a person to use this metaphor\\ \hline
+		3 & Metaphor is absurd, makes no sense\\ \hline
+	\end{tabular}
+	\caption{Metaphor evaluation categories.}
+	\label{tab:evalcats}
+\end{table}
+
+Table \ref{tab:results} shows some of the more interesting outputs that fall under each category. The first line of each sample is the original definition, and the second is the definition after a word is replaced with a metaphorical equivalent.
+
+\begin{table}[h]
+	\centering
+	\small
+	\begin{tabular}{|c|p{12cm}|} \hline
+		\textbf{Category} & \textbf{Examples}\\ \hline
+		1 & 
+		A problem is a source of difficulty.\par
+        A problem is a headstream of difficulty.\par
+        \medskip
+        A employee is a worker who is hired to perform a job.\par
+        A employee is a machine who is hired to perform a job.\par
+        \medskip
+        A desire is the feeling that accompanies an unsatisfied state.\par
+        A desire is the famishment that accompanies an unsatisfied state.\par
+        \medskip
+        A hero is a man distinguished by exceptional courage and nobility and strength.\par
+        A hero is a giant distinguished by exceptional courage and nobility and strength.\par
+		\\ \hline
+        2 & 
+        An expert is a person with special knowledge or ability who performs skillfully.\par
+        An expert is a temple with special knowledge or ability who performs skillfully.\par
+        \medskip       	
+        A psychologist is a scientist trained in psychology.\par
+        A psychologist is a work animal trained in psychology.\par
+        \medskip
+        A case is a special set of circumstances.\par
+        A case is a special conservatoire of circumstances.\par
+        \medskip
+        Nationalism is the doctrine that your national culture is superior to any other.\par
+        Nationalism is the costume that your national culture is superior to any other.\par
+        \\ \hline
+		3 & 
+		A magnitude is the property of relative size or extent (whether large or small).\par
+        A magnitude is the property of relative peanut or extent (whether large or small).\par
+        \medskip
+        A king is a male sovereign; ruler of a kingdom.\par
+        A king is a male female; ruler of a kingdom.\par
+        \medskip
+        A thought is the organized beliefs of a period or group or individual.\par
+        A thought is the organized cat scratch disease of a period or group or individual.\par
+        \medskip
+        A chemist is a scientist who specializes in chemistry.\par
+        A chemist is a rotisserie who specializes in chemistry.\par
+		\\ \hline
+	\end{tabular}
+	\caption{Metaphor evaluation categories.}
+	\label{tab:results}
+\end{table}
+
+We labeled 12 sentences as belonging to Category 1, 13 as belonging to Category 2, and the remaining 174 as Category 3. Of the sentences in Category 3, many contain obscure words.
 
 \section{Conclusion}
 The end.
@@ -132,11 +252,16 @@ The end.
   \emph{Learning Accurate, Compact, and Interpretable Tree Annotation},
   In Proceedings of COLING-ACL, 2006.
 
-%todo: this may not be the best citation?  
 \bibitem{wordnet}
-  G. Miller,
-  \emph{WordNet: A Lexical Database for English},
-  Communications of the ACM Vol. 38, No. 11: 39-41, 1995.
+  WordNet, http://wordnet.princeton.edu
+%  G. Miller,
+%  \emph{WordNet: A Lexical Database for English},
+%  Communications of the ACM Vol. 38, No. 11: 39-41, 1995.
+
+\bibitem{mccarthy}
+  D. McCarthy, R. Koeling, J. Weeds, J. Carrol,
+  \emph{Using Automatically Acquired Predominant Senses for Word Sense},
+  Proceedings of the ACL SENSEVAL-3 workshop, 2004.
 
 \end{thebibliography}
 
