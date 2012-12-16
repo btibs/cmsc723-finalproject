@@ -30,7 +30,11 @@ Metaphors have often been thought of as just rhetorical flourish, however when a
 
 \section{Related Work}
 
-Work on metaphors began as early as the 1980s \cite{lakoff80}. Lakoff and Johnson. There has been quite a bit of work done on metaphors, with the main focus being on metaphor identification. Discuss work done on metaphor identification and the ``small'' amount of work that has been done on generating metaphors.
+A majority of the work done on metaphors thus far falls in one of two areas, conceptual metaphor mapping \cite{lakoff80}\cite{lakoff89} and identifying metaphors \cite{shutova101}\cite{pragglejaz}.
+
+In 2007, the Pragglejaz Group introduced the "Metaphor Identification Procedure", which has become a seminal procedure due to its "universal" approach for identifying metaphors. Some limitations (admitted by the author) are known to exist with this procedure however, in that it does not account for all types of existing metaphors (for example, metaphorical utterances in conversation) \cite{pragglejaz}. The lack of agreed upon criteria as to what exactly constitutes a metaphor has also become a major issue amongst researchers.
+
+Recently, there have been attempts at an unsupervised approach to metaphor identification, involving the clustering of verbs and nouns, which resulted in a system having a precision of 0.79 \cite{shutova101}.
 
 \section{Background}
 
@@ -58,7 +62,7 @@ In order to efficiently handle the large number of input sentences for testing, 
 
 \section{Model}
 
-A conceptual schematic of our metaphor generation model is included as Figure \ref{fig:schematic}.  Our system first parses the input, as described in Section \ref{sec:berkeleyparser}.  Using the resulting parse tree, a target word for metaphorical replacement is identified based on several common grammatical structures of metaphor.  Then, using WordNet and a list of conceptual mappings, a replacement for the target word is found, giving a metaphorical output sentence.
+A conceptual schematic of our metaphor generation model is included as Figure \ref{fig:schematic}.  Our system first parses the input, as described in Section \ref{sec:berkeleyparser}.  Using the resulting parse tree, a target word for metaphorical replacement is identified based on several common grammatical structures of metaphor.  Then, using WordNet and a list of conceptual mappings, a replacement for the target word is found, giving a metaphorical output sentence.  A diagram showing detailed steps for an example sentence is included at the end of this section as Figure \ref{fig:mapoutline}.
 
 \begin{figure}[h]
 	\centering
@@ -114,13 +118,20 @@ We now need to choose one of the possible replacement words from potentially lar
 
 We explore two approaches. The first is the Jaccard Similarity of the context of the candidate word, which is the set of words in the gloss and example sentences, and the context of the target word, which is the set of words in the same sentence. We remove stop words from the contexts and calculate the Jaccard Similarity. If $C_c$ is the set of words in the context of the candidate word, and $C_t$ is the set of words in the context of the replacement word, this is $(C_c \cap C_t) / (C_c \cup C_t)$.
 
-The second attempts to measure the semantic similarity of words in $C_c$ and $C_t$. Shortest Ancestral Path \(SAP\) is a measure of semantic similarity based on the intuition that words close together in the WordNet hypernym tree are likely to be closely related. For example, in Figure \ref{fig:wnmapexample}, we would expect ``cat'' to be more closely related to ``dog'' than to ``worker''. We implement a similarity metric between $C_c$ and $C_t$ that considers the average SAP between all pairs of words in $C_c \times C_t$.
+The second attempts to measure the semantic similarity of words in $C_c$ and $C_t$. Shortest Ancestral Path (SAP) is a measure of semantic similarity based on the intuition that words close together in the WordNet hypernym tree are likely to be closely related. For example, in Figure \ref{fig:wnmapexample}, we would expect ``cat'' to be more closely related to ``dog'' than to ``worker''. We implement a similarity metric between $C_c$ and $C_t$ that considers the average SAP between all pairs of words in $C_c \times C_t$.
 
 Since calculating SAP for all pairs of words is computationally expensive, we first limit the set of candidate words by requiring a Jaccard Similarity above some threshold. However, in the end, both methods give very similar results.
 
 \subsubsection{Adjectives and Verbs}
 
 The method outlined above will work when the target word is a noun. When the target word is an adjective or a verb, we have to do a little more work. WordNet includes a ``derivationally related form'' link which connects lexically related words across parts of speech, such as ``work'' and ``worker''. When the target word is not a noun, we follow this link to a noun, perform the method above with that noun, and finally convert back to the original part of speech by search for derivationally related forms of the best candidate noun with the correct part of speech.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{mappingoutline.png}
+	\caption{Schematic of overall sentence processing, from input to output.}
+	\label{fig:mapoutline}
+\end{figure}
 
 \section{Results}
 
@@ -206,84 +217,96 @@ Table \ref{tab:results} shows some of the more interesting outputs that fall und
 In addition to our own evaluation, we also asked four human readers to categorize each of the 199 generated sentences (Table \ref{tab:catresults}).
 
 \begin{table}[H]
-\centering
-\small
-\begin{tabular}{|l|c|c|c|} \hline
-\textbf{Evaluator} & \textbf{Category 1} & \textbf{Category 2} & \textbf{Category 3} \\ \hline
-Us & 18 & 26 & 155\\ \hline
-Reader 1 & 31 & 53 & 115\\ \hline
-Reader 2 & 12 & 19 & 168\\ \hline
-Reader 3 & 15 & 46 & 139\\ \hline
-Reader 4 & 16 & 47 & 137\\ \hline
-\textbf{Average Percent} & \textbf{9.2} & \textbf{19.2} & \textbf{71.6} \\ \hline
-\end{tabular}
-\caption{Metaphor categorization results.}
-\label{tab:catresults}
+    \centering
+    \small
+    \begin{tabular}{|l|c|c|c|} \hline
+    \textbf{Evaluator} & \textbf{Category 1} & \textbf{Category 2} & \textbf{Category 3} \\ \hline
+    Us & 18 & 26 & 155\\ \hline
+    Reader 1 & 31 & 53 & 115\\ \hline
+    Reader 2 & 12 & 19 & 168\\ \hline
+    Reader 3 & 15 & 46 & 139\\ \hline
+    Reader 4 & 16 & 47 & 137\\ \hline
+    \textbf{Average Percent} & \textbf{9.2} & \textbf{19.2} & \textbf{71.6} \\ \hline
+    \end{tabular}
+    \caption{Evaluation of generated metaphors}
+    \label{tab:catresults}
 \end{table}
 
-\section{Conclusion}
-The end.
+On average, human readers classified 9.2\% of the generated metaphors as Category 1, 19.2\% as Category 2, and 71.6\% as Category 3. Of the 199 new sentences generated, roughly 30\% are coherent uses of metaphor. The remaining 70\% contain metaphors with no clear conceptual connection between the original and replacement word, but are surprisingly entertaining to read.
+
+There is also a good amount of variation between evaluators in assigning examples to categories. This reflects the fact that different people understand metaphor in different ways, making the evaluation of a task like metaphor identification challenging. Metaphor is not a binary attribute of a word or phrase; it may be closer to a scalar property based on abstraction from a concrete or literal definition.
+
+\section{Conclusion and Future Work}
+
+Conclusion-type things go here.
+
+There is clearly room for improvement.  Without changing our fundamental methods, one step is to add additional conceptual metaphors, which would improve the overall number of metaphors generated. We included many from Lakoff et. al. \cite{lakoff89}, but some mappings did not translate well into WordNet definitions and were left out.
+
+When identifying replacement words, we use the first word of the appropriate type for a pattern.  This can produce skewed results: for instance, given the sentence ``The dog ate a bowl of food'', ``bowl'' will be identified as a candidate for metaphorical replacement, though ``food'' might be a better choice.  This would require leveraging the parse information more completely in the target identification stage.
+
+We hypothesize a significant improvement might be realized by more carefully choosing hyponyms when traversing downwards in the tree.  This may be accomplished by using machine learning methods to determine appropriate replacements.
+Future Work - Describe the machine learning approach -> goal would be to learn the characteristic that motivates a conceptual mapping.  (xml metaphor corpus)
 
 \newpage
 % Bibliography Section
 \begin{thebibliography}{9}
 
 \bibitem{shutova101}
-  E. Shutova, L. Sun, and A. Korhonen,
-  \emph{Metaphor Identification Using Verb and Noun Clustering}.
-  In Proceedings of COLING 2010,
+  E. Shutova, L. Sun, and A. Korhonen, 2010.
+  Metaphor Identification Using Verb and Noun Clustering.
+  In \emph{Proceedings of COLING 2010}.
   Beijing, China.
   
 \bibitem{shutova102}
-  E. Shutova,
-  \emph{Models of Metaphor in NLP},
-  In Proceedings of ACL 2010,
+  E. Shutova. 2010.
+  Models of Metaphor in NLP,
+  In \emph{Proceedings of ACL 2010}.
   Uppsala, Sweden.
   
 \bibitem{lakoff80}
-  G. Lakoff, M. Johnson
-  \emph{Metaphors We Live By},
-  University of Chicago Press, 1980.
+  G. Lakoff, M. Johnson. 1980.
+  \emph{Metaphors We Live By}.
+  University of Chicago Press.
 
 \bibitem{steen12}
-  J. Herrmann, et al.,
-  \emph{VU Amsterdam Metaphor Corpus},
-  University of Oxford, 2012.
+  J. Herrmann, et al.  2012.
+  \emph{VU Amsterdam Metaphor Corpus}.
+  University of Oxford.
 
 \bibitem{mason04}
-  Z. Mason,
-  \emph{CorMet: A Computational, Corpus-Based Conventional Metaphor Extraction System},
-  Brandeis University, 2004.
+  Z. Mason. 2004.
+  \emph{CorMet: A Computational, Corpus-Based Conventional Metaphor Extraction System}.
+  Brandeis University.
 
 \bibitem{lakoff89}
-  G. Lakoff, J. Espenson, A. Goldberg,
-  \emph{Master Metaphor List},
-  University of California at Berkley, 1989.
+  G. Lakoff, J. Espenson, A. Goldberg. 1989.
+  \emph{Master Metaphor List}.
+  University of California at Berkeley.
   
 \bibitem{berkeleyparser}
-  S. Petrov, L. Barrett, R. Thibaux, D. Klein,
-  \emph{Learning Accurate, Compact, and Interpretable Tree Annotation},
-  In Proceedings of COLING-ACL, 2006.
+  S. Petrov, L. Barrett, R. Thibaux, D. Klein. 2006.
+  Learning Accurate, Compact, and Interpretable Tree Annotation.
+  In \emph{Proceedings of COLING-ACL, 2006}.
 
 \bibitem{wordnet}
-  G. Miller,
-  \emph{WordNet: A Lexical Database for English},
-  Communications of the ACM Vol. 38, No. 11: 39-41, 1995.
+  G. Miller. 1995.
+  WordNet: A Lexical Database for English.
+  \emph{Communications of the ACM Vol. 38, No. 11: 39-41}.
 
 \bibitem{mccarthy}
-  D. McCarthy, R. Koeling, J. Weeds, J. Carrol,
-  \emph{Using Automatically Acquired Predominant Senses for Word Sense},
-  Proceedings of the ACL SENSEVAL-3 workshop, 2004.
+  D. McCarthy, R. Koeling, J. Weeds, J. Carrol. 2004.
+  Using Automatically Acquired Predominant Senses for Word Sense.
+  \emph{Proceedings of the ACL SENSEVAL-3 workshop, 2004}.
 
 \bibitem{pragglejaz}
-  Pragglejaz Group,
-  \emph{MIP: A Method for Identifying Metaphorically Used Words in Discourse},
-  Metaphor and Symbol, 22(1), I-39, 2007.
+  Pragglejaz Group. 2007.
+  MIP: A Method for Identifying Metaphorically Used Words in Discourse.
+  \emph{Metaphor and Symbol, 22(1), I-39}.
 
 \bibitem{ahrens}
-  K. Ahrens,
-  \emph{Mapping Principles for Conceptual Metaphors},
-  Researching and Applying Metaphor in the Real World, 2010
+  K. Ahrens. 2010.
+  Mapping Principles for Conceptual Metaphors.
+  \emph{Researching and Applying Metaphor in the Real World}.
 
 \end{thebibliography}
 
