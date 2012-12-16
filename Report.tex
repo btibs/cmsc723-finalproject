@@ -17,7 +17,7 @@ Metaphor Generation}
 \maketitle
 
 \begin{abstract}
-We discuss a model for metaphor generation, drawing on limited previous work primarily in metaphor identification.  We first use a parser to identify target words for replacement.  Then, a lexical database and conceptual mappings from linguistic theory are used to replace the target word, resulting in a sentence with metaphorical meaning.  Though evaluation of metaphor is ill-defined in the field, averaging human responses of generated metaphors gives roughly 30\% of generated metaphors as being coherent and logical constructs.  As there is little prior work in the field, this is a reasonable starting point and we suggest future improvements incorporating machine learning methods.
+We discuss a model for metaphor generation, drawing on limited previous work primarily in metaphor identification.  We first use a parser to identify target words for replacement.  Then, a lexical database and conceptual mappings from linguistic theory are used to replace the target word, resulting in a sentence with metaphorical meaning.  Though evaluation of metaphor is ill-defined in the field, averaging human responses of generated metaphors gives roughly 30\% of generated metaphors as being coherent and logical constructs.  As there is little prior work in the field of metaphor \emph{generation}, our results provide a reasonable baseline. We also give suggestions for future work incorporating machine learning methodologies, which we hypothesize would exhibit a noticeable improvement over the baseline.
 \end{abstract}
 
 \newpage
@@ -30,11 +30,13 @@ Metaphors have often been thought of as just rhetorical flourish, however when a
 
 \section{Related Work}
 
-A majority of the work done on metaphors thus far falls in one of two areas, conceptual metaphor mapping \cite{lakoff80}\cite{lakoff89} and identifying metaphors \cite{shutova101}\cite{pragglejaz}.
+A majority of the work done on metaphors thus far falls in one of two areas: conceptual metaphor mapping \cite{lakoff80} \cite{lakoff89}, and identifying metaphors \cite{shutova101} \cite{pragglejaz}.
 
-In 2007, the Pragglejaz Group introduced the "Metaphor Identification Procedure", which has become a seminal procedure due to its "universal" approach for identifying metaphors. Some limitations (admitted by the author) are known to exist with this procedure however, in that it does not account for all types of existing metaphors (for example, metaphorical utterances in conversation) \cite{pragglejaz}. The lack of agreed upon criteria as to what exactly constitutes a metaphor has also become a major issue amongst researchers.
+In 2007, the Pragglejaz Group introduced the ``Metaphor Identification Procedure’’, which has become a seminal procedure due to its ``universal’’ approach for identifying metaphors. Some limitations (admitted by the author) are known to exist with this procedure however, in that it does not account for all types of existing metaphors (for example, metaphorical utterances in conversation) \cite{pragglejaz}. The lack of agreed upon criteria as to what exactly constitutes a metaphor has also become a major issue amongst researchers.
 
-Recently, there have been attempts at an unsupervised approach to metaphor identification, involving the clustering of verbs and nouns, which resulted in a system having a precision of 0.79 \cite{shutova101}.
+Recently, there has been an attempt at an unsupervised approach to metaphor identification, involving the clustering of verbs and nouns, which resulted in a system having a precision of 0.79 \cite{shutova101}. This approach relies on a small seed set of metaphorical relation mappings, of which unsupervised noun and verb clustering is performed on, in order to harvest potential target domain concepts. Then, a search through a POS-annotated dataset (the British National Corpus in this case) is performed to look for metaphorical expressions describing the target domain concepts. In summary, this approach generates syntactically similarly-structured metaphors. One limitation to this approach is that it only identifies common metaphors. Less general metaphors (i.e. metaphors created by a particular age group, metaphors only understood in specific geographic regions) and metaphors that break syntactic rules would be less likely to be found \cite{gentner01}.
+
+We were able to locate one paper directly related to metaphor generation \cite{jones92}. In this, Jones looks at generating a subclass of metaphors, which he calls transparently-motivated metaphors. Transparently-motivated metaphors are similar to conventional metaphors, however they also include novel/dead metaphors whereas conventional metaphors, by definition, do not. As admitted by the author, the "qualities" he specifies that decide whether or not a domain is a reasonable metaphorical domain do constrain the number of potential domains for a metaphor mapping to occur in. One severe limitation that exist in the approach outlined in \cite{jones92} is that the author relies on the "detailed knowledge" of human experience to decide which candidate metaphors are better when descending the hyponym hierarchy of a domain. No suggestions are made as to how to computationally evaluate candidate metaphors.
 
 \section{Background}
 
@@ -112,7 +114,7 @@ This immediately runs into the problem of word sense disambiguation; given a wor
 	\label{fig:wnmapexample}
 \end{figure}
 
-\subsubsection{Replacement Selection}
+\subsubsection{Candidate Selection}
 
 We now need to choose one of the possible replacement words from potentially large set of candidates. Each candidate is a synset in WordNet, which includes a gloss (definition) and possibly example sentences. Our approach is to choose the candidate whose gloss and example sentence overlap the most with the context of the target word in its original text.
 
@@ -308,6 +310,16 @@ Future Work - Describe the machine learning approach -> goal would be to learn t
   Mapping Principles for Conceptual Metaphors.
   \emph{Researching and Applying Metaphor in the Real World}.
 
+\bibitem{gentner01}
+  D. Gentner, B. Bowdle. 2001.
+  Convention, Form, and Figurative Language Processing.
+  \emph{Metaphor and Symbol, 16(3 \& 4), 223-247}.
+
+\bibitem{jones92}
+  M. Jones. 1992.
+  Generating A Specific Class of Metaphors.
+  In \emph{Proceedings of the 30th annual meeting on Association for Computational Linguistics (ACL '92)}. Association for Computational Linguistics, Stroudsburg, PA, USA.
+  
 \end{thebibliography}
 
 \end{document}
