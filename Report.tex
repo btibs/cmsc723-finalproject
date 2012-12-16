@@ -4,19 +4,25 @@
 \usepackage{comment}
 \usepackage{amsmath}
 \usepackage{float}
+\usepackage{indentfirst}
+\usepackage[font={small}]{caption}
 \restylefloat{table}
 
 \title{CMSC 723 Final Project\\
 Metaphor Generation}
 \author{Joshua Bradley, Isaac Julien, \& Elizabeth McNany}
 \date{December 16, 2012}
-\begin{document}
-  \maketitle
 
-\begin{center}
-\small
-\textsc{Abstract}: Abstract goes here
-\end{center}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Abstract goes here
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
 
 \section{Introduction}
 
@@ -50,9 +56,9 @@ We are using the Berkeley Parser \cite{berkeleyparser} for parsing the input sen
 
 In order to efficiently handle the large number of input sentences for testing, we wrote a Python interface to the parser that returns output parses for given phrases or input files.  The parser output is then converted into a parse tree suitable for use in the remainder of processing.
 
-\section{General Model}
+\section{Model}
 
-A conceptual schematic of our metaphor generation model is included as Figure \ref{fig:schematic}.  Our system first takes an input sentence and parses it as described in section \ref{sec:berkeleyparser}.  Using the resulting parse tree, a target word for metaphorical replacement is identified, based on several common grammatical structures of metaphor.  Then, using WordNet and a list of conceptual mappings, a replacement for the target word is found, giving a metaphorical output sentence.
+A conceptual schematic of our metaphor generation model is included as Figure \ref{fig:schematic}.  Our system first parses the input, as described in Section \ref{sec:berkeleyparser}.  Using the resulting parse tree, a target word for metaphorical replacement is identified based on several common grammatical structures of metaphor.  Then, using WordNet and a list of conceptual mappings, a replacement for the target word is found, giving a metaphorical output sentence.
 
 \begin{figure}[h]
 	\centering
@@ -63,24 +69,22 @@ A conceptual schematic of our metaphor generation model is included as Figure \r
 
 \subsection{Identifying Target Word}
 \label{sec:identtarget}
-In order to identify an appropriate target word to replace with a metaphor, we focused on detecting three basic grammatical structures for metaphors: ``NOUN is NOUN'', ``NOUN VERB'', and ``ADJ NOUN'' or ``NOUN is ADJ''.  Examples of each type of metaphor are given in Table \ref{tab:metaphorexamples}.
+In order to identify an appropriate target word to replace with a metaphor, we focused on detecting three basic grammatical structures for metaphors: ``\emph{NOUN} is \emph{NOUN}'', ``\emph{NOUN} \emph{VERB}'', and ``\emph{ADJ} \emph{NOUN}'' or ``\emph{NOUN} is \emph{ADJ}''.  Examples of each type of metaphor are given in Table \ref{tab:metaphorexamples}.
 
 \begin{table}[h]
 	\centering
 	\small
 	\begin{tabular}{|l|c|l|} \hline
 		\textbf{Pattern} & \textbf{Metaphor} & \textbf{Example}\\	\hline
-		NOUN1 is NOUN2 & NOUN2 & That person is a pig.\\ \hline
-		NOUN VERB & VERB & She flew down the stairs.\\ \hline
-		ADJ NOUN or NOUN is ADJ & ADJ & The used-car salesman is slimy.\\ \hline
+		\emph{NOUN1} is \emph{NOUN2} & \emph{NOUN2} & That person is a pig.\\ \hline
+		\emph{NOUN} \emph{VERB} & \emph{VERB} & She flew down the stairs.\\ \hline
+		\emph{ADJ} \emph{NOUN} or \emph{NOUN} is \emph{ADJ} & \emph{ADJ} & The used-car salesman is slimy.\\ \hline
 	\end{tabular}
 	\caption{Basic metaphor patterns and examples.}
 	\label{tab:metaphorexamples}
 \end{table}
 
-Using the parse 
-
-We search for these example patterns in the parse from the input sentence and if successful return the pattern found and positions of the relevant words.  This information is then passed to the WordNet interface to determine appropriate metaphorical substitutions for the words.
+We search for these example patterns in the parse from the input sentence, and if successful, return the pattern found and positions of the relevant words.  This information is then passed to the next component of our model to determine appropriate metaphorical substitutions for the words.
 
 \subsection{Conceptual Mapping}
 
@@ -104,7 +108,7 @@ This immediately runs into the problem of word sense disambiguation; given a wor
 	\label{fig:wnmapexample}
 \end{figure}
 
-\subsubsection{Final Selection}
+\subsubsection{Replacement Selection}
 
 We now need to choose one of the possible replacement words from potentially large set of candidates. Each candidate is a synset in WordNet, which includes a gloss (definition) and possibly example sentences. Our approach is to choose the candidate whose gloss and example sentence overlap the most with the context of the target word in its original text.
 
@@ -120,7 +124,7 @@ The method outlined above will work when the target word is a noun. When the tar
 
 \section{Results}
 
-\subsubsection{Data}
+\subsection{Data}
 We evaluated our system on 829 definitions from WordNet synsets. Definitions are ideal for testing because they are of the form:
 
 \begin{center}
@@ -135,9 +139,9 @@ From which it is easy to generate a sentence like:
 
 We can then attempt to replace the second noun in the definition (``account'') with a metaphorical equivalent, using the rest of the definition as context. Our system generates 199 metaphors as outlined above.
 
-\subsubsection{Evaluation}
+\subsection{Evaluation}
 
-As noted in the related work section, people often debate what exactly constitutes a metaphor, and evaluating each output of our system as ``right'' or ``wrong'' is difficult. This section includes our own evaluation of the output, as well as the evaluation of other human readers.
+As noted in the related work section, people often debate what exactly constitutes a metaphor, and evaluating each output of our system as ``right'' or ``wrong'' is difficult. We include our own evaluation of the output, as well as the evaluation of other human readers.
 
 We find that our system does produce some sentences that include genuine, insightful uses of metaphor. The rest of the sentences range from interesting and strange to absurd and comical. We divide the results into three categories, described in Table \ref{tab:evalcats}.
 
@@ -262,15 +266,24 @@ The end.
   In Proceedings of COLING-ACL, 2006.
 
 \bibitem{wordnet}
-  WordNet, http://wordnet.princeton.edu
-%  G. Miller,
-%  \emph{WordNet: A Lexical Database for English},
-%  Communications of the ACM Vol. 38, No. 11: 39-41, 1995.
+  G. Miller,
+  \emph{WordNet: A Lexical Database for English},
+  Communications of the ACM Vol. 38, No. 11: 39-41, 1995.
 
 \bibitem{mccarthy}
   D. McCarthy, R. Koeling, J. Weeds, J. Carrol,
   \emph{Using Automatically Acquired Predominant Senses for Word Sense},
   Proceedings of the ACL SENSEVAL-3 workshop, 2004.
+
+\bibitem{pragglejaz}
+  Pragglejaz Group,
+  \emph{MIP: A Method for Identifying Metaphorically Used Words in Discourse},
+  Metaphor and Symbol, 22(1), I-39, 2007.
+
+\bibitem{ahrens}
+  K. Ahrens,
+  \emph{Mapping Principles for Conceptual Metaphors},
+  Researching and Applying Metaphor in the Real World, 2010
 
 \end{thebibliography}
 
