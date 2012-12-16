@@ -40,13 +40,13 @@ We were able to locate one paper directly related to metaphor generation \cite{j
 
 \section{Background}
 
-Our system makes use of several components from other research, namely: WordNet, for word definitions and relations; and the Berkeley Parser, for part-of-speech tagging and parsing input sentences.
+Our system makes use of several components from other research, namely: WordNet, for word definitions and relations; the Master Metaphor List, for conceptual mappings between words; and the Berkeley Parser, for part-of-speech tagging and parsing input sentences.
 
 \subsection{WordNet}
 
 WordNet is a ``large lexical database of English'' \cite{wordnet}. The fundamental unit in WordNet is a synset, a cognitively synonymous group of words. Each synset may include a definition and example sentence, as well as lexical and semantic links to other synsets. These links distinguish WordNet from an ordinary dictionary or thesaurus by identifying relationships between words and concepts other than synonymy.
 
-The primary relation between noun synsets is hypernymy (Figure \ref{fig:wordnettree}). A noun \emph{NOUN1} is a hypernym of some other noun \emph{NOUN2} if \emph{NOUN2} is a type of \emph{NOUN1}. For instance, a \emph{dog} is a type of \emph{canine}, so \emph{canine} is a hypernym of \emph{dog}, and \emph{dog} is a hyponym of \emph{canine}. WordNet nouns form a hypernym tree, with synsets at the top having a more general meaning (``entity''), and synsets lower down in the tree having more specific meaning (``Cardigan Welsh Corgi'').
+The primary relation between noun synsets is hypernymy (Figure \ref{fig:wordnettree}). A noun \textsc{noun1} is a hypernym of some other noun \textsc{noun2} if \textsc{noun2} is a type of \textsc{noun1}. For instance, a \emph{dog} is a type of \emph{canine}, so \emph{canine} is a hypernym of \emph{dog}, and \emph{dog} is a hyponym of \emph{canine}. WordNet nouns form a hypernym tree, with synsets at the top having a more general meaning (``entity''), and synsets lower down in the tree having more specific meaning (``Cardigan Welsh Corgi'').
 
 \begin{figure}[h]
 	\centering
@@ -54,6 +54,9 @@ The primary relation between noun synsets is hypernymy (Figure \ref{fig:wordnett
 	\caption{The WordNet hypernym tree.}
 	\label{fig:wordnettree}
 \end{figure}
+
+\subsection{Master Metaphor List}
+sdfusdf
 
 \subsection{Berkeley Parser}
 \label{sec:berkeleyparser}
@@ -64,7 +67,7 @@ In order to efficiently handle the large number of input sentences for testing, 
 
 \section{Model}
 
-A conceptual schematic of our metaphor generation model is included as Figure \ref{fig:schematic}.  Our system first parses the input, as described in Section \ref{sec:berkeleyparser}.  Using the resulting parse tree, a target word for metaphorical replacement is identified based on several common grammatical structures of metaphor.  Then, using WordNet and a list of conceptual mappings, a replacement for the target word is found, giving a metaphorical output sentence.  A diagram showing detailed steps for an example sentence is included at the end of this section as Figure \ref{fig:mapoutline}.
+A conceptual schematic of our metaphor generation model is included as Figure \ref{fig:schematic}.  Our system first parses the input, as described in Section \ref{sec:berkeleyparser}.  Using the resulting parse tree, a target word for metaphorical replacement is identified based on several common grammatical structures of metaphor.  Then, using WordNet and our list of conceptual mappings, a replacement for the target word is found, giving a metaphorical output sentence.  A diagram showing detailed steps for an example sentence is included at the end of this section as Figure \ref{fig:mapoutline}.
 
 \begin{figure}[h]
 	\centering
@@ -75,16 +78,16 @@ A conceptual schematic of our metaphor generation model is included as Figure \r
 
 \subsection{Identifying Target Word}
 \label{sec:identtarget}
-In order to identify an appropriate target word to replace with a metaphor, we focused on detecting three basic grammatical structures for metaphors: ``\emph{NOUN} is \emph{NOUN}'', ``\emph{NOUN} \emph{VERB}'', and ``\emph{ADJ} \emph{NOUN}'' or ``\emph{NOUN} is \emph{ADJ}''.  Examples of each type of metaphor are given in Table \ref{tab:metaphorexamples}.
+In order to identify an appropriate target word to replace with a metaphor, we focused on detecting three basic grammatical structures for metaphors: ``\textsc{noun} is \textsc{noun}'', ``\textsc{noun} \textsc{verb}'', and ``\textsc{adj} \textsc{noun}'' or ``\textsc{noun} is \textsc{adj}''.  Examples of each type of metaphor are given in Table \ref{tab:metaphorexamples}.
 
 \begin{table}[h]
 	\centering
 	\small
 	\begin{tabular}{|l|c|l|} \hline
 		\textbf{Pattern} & \textbf{Metaphor} & \textbf{Example}\\	\hline
-		\emph{NOUN1} is \emph{NOUN2} & \emph{NOUN2} & That person is a pig.\\ \hline
-		\emph{NOUN} \emph{VERB} & \emph{VERB} & She flew down the stairs.\\ \hline
-		\emph{ADJ} \emph{NOUN} or \emph{NOUN} is \emph{ADJ} & \emph{ADJ} & The salesman is slimy.\\ \hline
+		\textsc{noun} is \textsc{noun} & \textsc{noun2} & That person is a pig.\\ \hline
+		\textsc{noun} \textsc{verb} & \textsc{verb} & She flew down the stairs.\\ \hline
+		\textsc{adj} \textsc{noun} or \textsc{noun} is \textsc{adj} & \textsc{adj} & The salesman is slimy.\\ \hline
 	\end{tabular}
 	\caption{Basic metaphor patterns and examples.}
 	\label{tab:metaphorexamples}
