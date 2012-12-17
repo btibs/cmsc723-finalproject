@@ -18,7 +18,7 @@ Metaphor Generation}
 \maketitle
 
 \begin{abstract}
-We discuss a model for metaphor generation, drawing on limited previous work primarily in metaphor identification.  We first use a parser to identify target words for replacement.  Then, a lexical database and conceptual mappings from linguistic theory are used to replace the target word, resulting in a sentence with metaphorical meaning.  Though evaluation of metaphor is ill-defined in the field, averaging human responses of generated metaphors gives roughly 30\% of generated metaphors as being coherent and logical constructs.  As there is little prior work in the field of metaphor \emph{generation}, our results provide a reasonable baseline. We also give suggestions for future work incorporating machine learning methodologies, which we hypothesize would exhibit a noticeable improvement over the baseline.
+We discuss a model for metaphor generation, drawing on limited previous work primarily in metaphor identification.  We first use a parser to identify target words for replacement.  Then, a lexical database and conceptual mappings from linguistic theory are used to replace the target word, resulting in a sentence with metaphorical meaning.  Though evaluation of metaphor is ill-defined in the field, averaging human responses of generated metaphors gives roughly 30\% of generated metaphors as being coherent and logical constructs.  As there is little prior work in the field of metaphor generation, our results provide a reasonable baseline. We also give suggestions for future work incorporating machine learning methodologies, which we hypothesize would exhibit a noticeable improvement over the baseline.
 \end{abstract}
 
 \newpage
@@ -27,17 +27,17 @@ We discuss a model for metaphor generation, drawing on limited previous work pri
 
 \section{Introduction}
 
-Metaphors have often been thought of as just rhetorical flourish, however when analyzed in a more abstract manner, they are also one of the most powerful elements of language. Of all theories surrounding metaphors, one of the most popularly accepted is the Conceptual Metaphor Theory \cite{lakoff80}. Lakoff and Johnson argue that on a grand scale, all of language is a metaphor to some degree, and that our conceptual system --- how we perceive reality --- is largely metaphorical. Metaphors affect our thoughts and actions, and ``structure our perceptions and understanding''. Since the inception of Conceptual Metaphor Theory, the study of metaphors has become a topic of interest. Throughout the field of NLP, metaphors are known to be a crux of disambiguation, breaking conventional syntax and semantic rules, which has motivated research efforts toward metaphor identification.  In this paper, we have taken a different approach to studying metaphor, and use Conceptual Metaphor Theory to construct a model for generating metaphors.
+Metaphors have often been thought of as just rhetorical flourish, however when analyzed in a more abstract manner, they are also one of the most powerful elements of language. Of all theories surrounding metaphors, one of the most popularly accepted is Conceptual Metaphor Theory \cite{lakoff80}. Lakoff and Johnson argue that all of language is a metaphor to some degree, and that our conceptual system --- how we perceive reality --- is largely metaphorical. Metaphors affect our thoughts and actions, and ``structure our perceptions and understanding''. Since the inception of Conceptual Metaphor Theory, the study of metaphors has become a topic of interest. Throughout the field of NLP, metaphors are known to be a crux of disambiguation, breaking conventional syntax and semantic rules, which has motivated research efforts toward metaphor identification.  In this paper, we have taken a different approach to studying metaphor, and use Conceptual Metaphor Theory to construct a model to generate metaphors.
 
 \section{Related Work}
 
-A majority of the work done on metaphors thus far falls in one of two areas: conceptual metaphor mapping \cite{lakoff89} \cite{lakoff80}, and identifying metaphors \cite{pragglejaz} \cite{shutova101}.
+A majority of the work done on metaphors thus far falls in one of two areas: conceptual metaphor mapping \cite{lakoff89, lakoff80}, and identifying metaphors \cite{pragglejaz, shutova101}.
 
-In 2007, the Pragglejaz Group introduced the ``Metaphor Identification Procedure’’, which has become a seminal procedure due to its ``universal’’ approach for identifying metaphors. Some limitations (admitted by the author) are known to exist with this procedure however, in that it does not account for all types of existing metaphors (for example, metaphorical utterances in conversation) \cite{pragglejaz}. The lack of agreed upon criteria as to what exactly constitutes a metaphor has also become a major issue amongst researchers.
+In 2007, the Pragglejaz Group introduced the ``Metaphor Identification Procedure'', which has become a seminal procedure due to its universal approach for identifying metaphors. Some limitations as admitted by the author are known to exist with this procedure, in that it does not account for all types of existing metaphors (for example, metaphorical utterances in conversation) \cite{pragglejaz}. The lack of agreed upon criteria as to what exactly constitutes a metaphor has also become a major issue amongst researchers.
 
-Recently, there has been an attempt at an unsupervised approach to metaphor identification, involving the clustering of verbs and nouns, which resulted in a system having a precision of 0.79 \cite{shutova101}. This approach relies on a small seed set of metaphorical relation mappings, of which unsupervised noun and verb clustering is performed on, in order to harvest potential target domain concepts. Then, a search through a POS-annotated dataset (the British National Corpus in this case) is performed to look for metaphorical expressions describing the target domain concepts. In summary, this approach generates syntactically similarly-structured metaphors. One limitation to this approach is that it only identifies common metaphors. Less general metaphors (i.e. metaphors created by a particular age group, metaphors only understood in specific geographic regions) and metaphors that break syntactic rules would be less likely to be found \cite{gentner01}.
+Recently, there has been an attempt at an unsupervised approach to metaphor identification, involving the clustering of verbs and nouns, which resulted in a system with precision of 0.79 \cite{shutova101}. This approach relies on a small seed set of metaphorical relation mappings, upon which unsupervised noun and verb clustering is performed in order to harvest potential target domain concepts. Then, a search through a POS-annotated dataset is performed to look for metaphorical expressions describing the target domain concepts. In summary, this approach generates syntactically similar metaphors. One limitation to this approach is that it only identifies common metaphors. Less general metaphors (i.e., metaphors created by a particular age group or metaphors only understood in specific geographic regions) and metaphors that break syntactic rules would be less likely to be found \cite{gentner01}.
 
-We were able to locate one paper directly related to metaphor generation \cite{jones92}. In this, Jones looks at generating a subclass of metaphors, which he calls transparently-motivated metaphors. Transparently-motivated metaphors are similar to conventional metaphors, however they also include novel/dead metaphors whereas conventional metaphors, by definition, do not. As admitted by the author, the "qualities" he specifies that decide whether or not a domain is a reasonable metaphorical domain do constrain the number of potential domains for a metaphor mapping to occur in. One severe limitation that exist in the approach outlined in \cite{jones92} is that the author relies on the "detailed knowledge" of human experience to decide which candidate metaphors are better when descending the hyponym hierarchy of a domain. No suggestions are made as to how to computationally evaluate candidate metaphors.
+One research effort directly related to metaphor generation is the work of Jones, published in 1992 \cite{jones92}. He examines generating a subclass of metaphors, called transparently-motivated metaphors. Transparently-motivated metaphors are similar to conventional metaphors; however, they also include novel or dead metaphors, whereas conventional metaphors by definition do not. As admitted by the author, the specified qualities that determine if a domain is reasonable metaphorical domain do constrain the number of potential domains in which a metaphor mapping may occur. One severe limitation that exists in the approach is that the author relies on the detailed knowledge of human experience to decide which candidate metaphors are better when descending the hyponym hierarchy of a domain. No suggestions are made as to how to computationally evaluate candidate metaphors.
 
 \section{Background}
 
@@ -47,7 +47,7 @@ Our system makes use of several components from other research, namely: WordNet,
 
 WordNet is a ``large lexical database of English'' \cite{wordnet}. The fundamental unit in WordNet is a synset, a cognitively synonymous group of words. Each synset may include a definition and example sentence, as well as lexical and semantic links to other synsets. These links distinguish WordNet from an ordinary dictionary or thesaurus by identifying relationships between words and concepts other than synonymy.
 
-The primary relation between noun synsets is hypernymy (Figure \ref{fig:wordnettree}). A noun \textsc{noun1} is a hypernym of some other noun \textsc{noun2} if \textsc{noun2} is a type of \textsc{noun1}. For instance, a \emph{dog} is a type of \emph{canine}, so \emph{canine} is a hypernym of \emph{dog}, and \emph{dog} is a hyponym of \emph{canine}. WordNet nouns form a hypernym tree, with synsets at the top having a more general meaning (``entity''), and synsets lower down in the tree having more specific meaning (``Cardigan Welsh Corgi'').
+The primary relation between noun synsets is hypernymy (Figure \ref{fig:wordnettree}). A noun \textsc{noun1} is a hypernym of some other noun \textsc{noun2} if \textsc{noun2} is a type of \textsc{noun1}. For instance, a \emph{dog} is a type of \emph{canine}, so \emph{canine} is a hypernym of \emph{dog}, and \emph{dog} is a hyponym of \emph{canine}. WordNet nouns form a hypernym tree, with synsets at the top having a more general meaning (\emph{entity}), and synsets lower down in the tree having more specific meaning (\emph{Cardigan Welsh Corgi}).
 
 \begin{figure}[h]
 	\centering
@@ -58,25 +58,25 @@ The primary relation between noun synsets is hypernymy (Figure \ref{fig:wordnett
 
 \subsection{Master Metaphor List}
 
-Lakoff’s Master Metaphor List \cite{lakoff89} is a compilation of conceptual metaphors, relating one concept in the ``source domain'' to another concept in the ``target domain''.  The list attempts to include results of metaphor research in the decade since his seminal work, \emph{Metaphors We Live By}, in 1980 \cite{lakoff80}.  The four major categories of metaphor in the list are Event Structure, Mental Events, Emotions, and Other.  For example, one metaphor from the Mental Events category is ``\textsc{Ideas are Food}'', with a more specific mapping of ``\textsc{Communication is Feeding}''.  This is the metaphor motivating the sentence ``The teacher spoon-fed them the information.''
+Lakoff’s Master Metaphor List \cite{lakoff89} is a compilation of conceptual metaphors, relating one concept in the source domain to another concept in the target domain.  The list attempts to include results of metaphor research in the decade since his seminal work, \emph{Metaphors We Live By} \cite{lakoff80}.  The four major categories of metaphor in the list are Event Structure, Mental Events, Emotions, and Other.  For example, one metaphor from the Mental Events category is ``\textsc{Ideas are Food}'', with a more specific mapping of ``\textsc{Communication is Feeding}''.  This is the metaphor motivating the sentence ``The teacher spoon-fed them the information.''
 
-The list of conceptual mappings used in our model were derived from the Master Metaphor List, by finding a WordNet entry for the source and target domains for each mapping.  This was limited by the number of appropriate definitions available and the grammatical structure of the mapping; in some cases there was no clear choice, and not all mappings from the list were used for our model.
+The list of conceptual mappings used in our model was derived from the Master Metaphor List, by finding a WordNet entry for the source and target domains of each mapping.  This was limited by the number of appropriate definitions available and the grammatical structure of the mapping; in some cases there was no clear choice, and not all mappings from the list were used for our model.
 
 \subsection{Berkeley Parser}
 \label{sec:berkeleyparser}
 
-We are using the Berkeley Parser \cite{berkeleyparser} for parsing the input sentences.  The Berkeley Parser uses a probabilistic context-free grammar to generate and find the most likely parse tree for an input sentence or phrase.  A full parse, as opposed to part of speech tagging only, is desirable for the task of metaphor generation so that the structure can be used to find relevant words, especially in sentences with multiple phrases or clauses.  This process is described in greater detail in Section \ref{sec:identtarget}.
+We use the Berkeley Parser \cite{berkeleyparser} to parse input sentences.  The Berkeley Parser uses a probabilistic context-free grammar to generate and find the most likely parse tree for an input sentence or phrase.  A full parse, as opposed to part of speech tagging only, is desirable for the task of metaphor generation so that the structure can be used to find relevant words, especially in sentences with multiple phrases or clauses.  This process is described in greater detail in Section \ref{sec:identtarget}.
 
 In order to efficiently handle the large number of input sentences for testing, we wrote a Python interface to the parser that returns output parses for given phrases or input files.  The parser output is then converted into a parse tree suitable for use in the remainder of processing.
 
 \section{Model}
 
-A conceptual schematic of our metaphor generation model is included as Figure \ref{fig:schematic}.  Our system first parses the input, as described in Section \ref{sec:berkeleyparser}.  Using the resulting parse tree, a target word for metaphorical replacement is identified based on several common grammatical structures of metaphor.  Then, using WordNet and our list of conceptual mappings, a replacement for the target word is found, giving a metaphorical output sentence.  A diagram showing detailed steps for an example sentence is included at the end of this section as Figure \ref{fig:mapoutline}.
+A conceptual schematic of our metaphor generation model is included as Figure \ref{fig:schematic}.  Our system first parses the input as described in Section \ref{sec:berkeleyparser}.  Using the resulting parse tree, a target word for metaphorical replacement is identified based on several common grammatical structures of metaphor.  Then, using WordNet and our list of conceptual mappings, a replacement for the target word is found, giving a metaphorical output sentence.  A diagram showing detailed steps for an example sentence is included at the end of this section as Figure \ref{fig:mapoutline}.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.60]{schematic.png}
-	\caption{Conceptual schematic for metaphor generation, from input sentence to output.}
+	\includegraphics[scale=0.70]{schematic.png}
+	\caption{Conceptual schematic for metaphor generation, from input to output.}
 	\label{fig:schematic}
 \end{figure}
 
@@ -103,7 +103,7 @@ We search for these example patterns in the parse from the input sentence, and i
 
 \subsubsection{Candidate Generation}
 
-At this point we have selected a target word in some context to replace. We would like to apply our conceptual mapping from literal to metaphorical domains. This first requires finding a possible conceptual mapping from our target word. To do this, we find a WordNet synset for this word, and then move up the hypernym tree until we either find a synset in the mapping or reach the top of the tree. If we find a synset in the mapping, then we know that the concept expressed by the original word can be expressed metaphorically by one or several other concepts. For each of these mapped-to concepts, we select all of the synsets in the subtree rooted at that concept as candidate replacements (Figures \ref{fig:wnmapping}, \ref{fig:wnmapexample}); in other words, all hyponyms of the concept.
+At this point we have selected a target word in some context to replace. We would like to apply our conceptual mapping from literal to metaphorical domains. This first requires finding a possible conceptual mapping from our target word. To do this, we find a WordNet synset for this word, and then move up the hypernym tree until we either find a synset in the mapping or reach the top of the tree. If we find a synset in the mapping, then we know that the concept expressed by the original word can be expressed metaphorically by one or several other concepts. For each of these mapped-to concepts, we select all of the synsets in the subtree rooted at that concept as candidate replacements (Figures \ref{fig:wnmapping}, \ref{fig:wnmapexample}), or in other words, all hyponyms of the concept.
 
 \begin{figure}[h]
 	\centering
@@ -112,7 +112,7 @@ At this point we have selected a target word in some context to replace. We woul
 	\label{fig:wnmapping}
 \end{figure}
 
-This immediately runs into the problem of word sense disambiguation; given a word ``knight'', we must decide if this word means ``a person of noble birth'' or ``a chess piece shaped to resemble the head of a horse''. One option is to select a sense based on frequency, using tag count, a measure of the number of times a particular sense is tagged in a certain corpus. This approach, the most common sense heuristic, is a difficult baseline to beat for WSD \cite{mccarthy}. However, we find it problematic because of inconsistency in the tag counts. Instead, we select all possible synsets sharing the same part of speech as the target word, and assume that when we later evaluate possible replacement words, erroneous senses are more likely to be filtered out.
+This immediately runs into the problem of word sense disambiguation; given the word ``knight'', we must decide if this word means ``a person of noble birth'' or ``a chess piece shaped to resemble the head of a horse''. One option is to select a sense based on frequency, using tag count, a WordNet measure of the number of times a particular sense is tagged in a certain corpus. This approach, the most common sense heuristic, is a difficult baseline to beat for WSD \cite{mccarthy}. However, we find it problematic because of inconsistency in the tag counts. Instead, we select all possible synsets sharing the same part of speech as the target word, and assume that when we later evaluate possible replacement words, erroneous senses are more likely to be filtered out.
 
 \begin{figure}[h]
 	\centering
@@ -123,17 +123,13 @@ This immediately runs into the problem of word sense disambiguation; given a wor
 
 \subsubsection{Candidate Selection}
 
-We now need to choose one of the possible replacement words from potentially large set of candidates. Each candidate is a synset in WordNet, which includes a gloss (definition) and possibly example sentences. Our approach is to choose the candidate whose gloss and example sentence overlap the most with the context of the target word in its original text.
+We now must choose one of the possible replacement words from potentially large set of candidates. Each candidate is a synset in WordNet, which includes a gloss (definition) and possibly example sentences. Our approach is to choose the candidate whose gloss and example sentence overlap the most with the context of the target word in its original text.
 
 We explore two approaches. The first is the Jaccard Similarity of the context of the candidate word, which is the set of words in the gloss and example sentences, and the context of the target word, which is the set of words in the same sentence. We remove stop words from the contexts and calculate the Jaccard Similarity. If $C_c$ is the set of words in the context of the candidate word, and $C_t$ is the set of words in the context of the replacement word, this is $(C_c \cap C_t) / (C_c \cup C_t)$.
 
-The second attempts to measure the semantic similarity of words in $C_c$ and $C_t$. Shortest Ancestral Path (SAP) is a measure of semantic similarity based on the intuition that words close together in the WordNet hypernym tree are likely to be closely related. For example, in Figure \ref{fig:wnmapexample}, we would expect ``cat'' to be more closely related to ``dog'' than to ``worker''. We implement a similarity metric between $C_c$ and $C_t$ that considers the average SAP between all pairs of words in $C_c \times C_t$.
+The second attempts to measure the semantic similarity of words in $C_c$ and $C_t$. Shortest Ancestral Path (SAP) is a measure of semantic similarity based on the intuition that words close together in the WordNet hypernym tree are likely to be closely related. For example, in Figure \ref{fig:wnmapexample}, we would expect \emph{cat} to be more closely related to \emph{dog} than to \emph{worker}. We implement a similarity metric between $C_c$ and $C_t$ that considers the average SAP between all pairs of words in $C_c \times C_t$.
 
 Since calculating SAP for all pairs of words is computationally expensive, we first limit the set of candidate words by requiring a Jaccard Similarity above some threshold. However, in the end, both methods give very similar results.
-
-\subsubsection{Adjectives and Verbs}
-
-The method outlined above will work when the target word is a noun. When the target word is an adjective or a verb, we have to do a little more work. WordNet includes a ``derivationally related form'' link which connects lexically related words across parts of speech, such as ``work'' and ``worker''. When the target word is not a noun, we follow this link to a noun, perform the method above with that noun, and finally convert back to the original part of speech by search for derivationally related forms of the best candidate noun with the correct part of speech.
 
 \begin{figure}[h]
 	\centering
@@ -141,6 +137,10 @@ The method outlined above will work when the target word is a noun. When the tar
 	\caption{Schematic of overall sentence processing, from input to output.}
 	\label{fig:mapoutline}
 \end{figure}
+
+\subsubsection{Adjectives and Verbs}
+
+The method outlined above will work when the target word is a noun. When the target word is an adjective or a verb, we have to do a little more work. WordNet includes a ``derivationally related form'' link which connects lexically related words across parts of speech, such as \emph{work} and \emph{worker}. When the target word is not a noun, we follow this link to a noun, perform the method above with that noun, and finally convert back to the original part of speech by search for derivationally related forms of the best candidate noun with the correct part of speech.
 
 \section{Results}
 
@@ -151,17 +151,19 @@ We evaluated our system on 829 definitions from WordNet synsets. Definitions are
     \emph{Account: a record or narrative description of past events.}
 \end{center}
 
+\noindent
 From which it is easy to generate a sentence like:
 
 \begin{center}
     \emph{An account is a record or narrative description of past events.}
 \end{center}
 
-We can then attempt to replace the second noun in the definition (``account'') with a metaphorical equivalent, using the rest of the definition as context. Our system generates 199 metaphors as outlined above.
+\noindent
+We then attempt to replace the second noun in the definition (``record'') with a metaphorical equivalent, using the rest of the definition as context. Our system generates 199 metaphors as outlined above.
 
 \subsection{Evaluation}
 
-As noted in the related work section, people often debate what exactly constitutes a metaphor, and evaluating each output of our system as ``right'' or ``wrong'' is difficult. We include our own evaluation of the output, as well as the evaluation of other human readers.
+As noted in the related work section, people often debate what exactly constitutes a metaphor, and evaluating each output of our system as correct or incorrect is difficult. We include our own evaluation of the output, as well as the evaluation of other human readers.
 
 We find that our system does produce some sentences that include genuine, insightful uses of metaphor. The rest of the sentences range from interesting and strange to absurd and comical. We divide the results into three categories, described in Table \ref{tab:evalcats}.
 
@@ -243,13 +245,13 @@ In addition to our own evaluation, we also asked four human readers to categoriz
 
 On average, human readers classified 9.2\% of the generated metaphors as Category 1, 19.2\% as Category 2, and 71.6\% as Category 3. Of the 199 new sentences generated, roughly 30\% are coherent uses of metaphor. The remaining 70\% contain metaphors with no clear conceptual connection between the original and replacement word, but are surprisingly entertaining to read.
 
-There is also a good amount of variation between evaluators in assigning examples to categories. This reflects the fact that different people understand metaphor in different ways, making the evaluation of a task like metaphor identification challenging. Metaphor is not a binary attribute of a word or phrase; it may be closer to a scalar property based on abstraction from a concrete or literal definition.
+There is also a good amount of variation between evaluators in assigning examples to categories. This reflects the fact that different people understand metaphor in different ways, making the evaluation of a task like metaphor identification challenging. As Lakoff argues, metaphor is not a binary attribute of a word or phrase \cite{lakoff80}; it may be closer to a scalar property based on abstraction from a concrete or literal definition.
 
 \section{Conclusion and Future Work}
 
-Our approach to metaphor generation differs from that of Jones \cite{jones92} in that we explicitly outline a computational model to generate and evaluate candidate metaphorical domains. As far as we know, we are the first to provide baseline results for such a \emph{generative} method. Some limitations do exist with our current approach however. To generate \emph{reasonable} metaphors, we use a list of conceptual mapping relations derived from the Master Metaphor List \cite{lakoff89}. This by no means is a comprehensive list, thus the expressiveness (i.e., \emph{metaphoricity}) of our generated metaphors is limited by the variability of mapping relations used. One other point to make about our model is its dependency on accessing a sanitized dataset with correct hypernym/hyponym relationships. As has been pointed out by critics of WordNet in the past, hypernyms (respectively hyponyms) exist at all levels with varying degrees of generality. Given a word, if its direct hypernym is too general, our model may produce an unreasonable metaphor. It may not even generate one at all if the source domain is not found within the list of mapping relations, which were originally constructed under the assumption of not being overly general.
+Our approach to metaphor generation differs from that of Jones \cite{jones92} in that we explicitly outline a computational model to generate and evaluate candidate metaphorical domains. As far as we know, we are the first to provide baseline results for such a generative method. However, some limitations do exist with our current approach. To generate reasonable metaphors, we use a list of conceptual mapping relations derived from the Master Metaphor List~\cite{lakoff89}. This is by no means a comprehensive list; thus, the expressiveness (i.e., metaphoricity) of our generated metaphors is limited by the variability of mapping relations used. One other point to make about our model is its dependency on accessing a sanitized dataset with correct hypernym and hyponym relationships. As has been pointed out by critics of WordNet in the past, hypernyms and hyponyms exist at all levels with varying degrees of generality. Given a word, if its direct hypernym is too general, our model may produce an unreasonable metaphor. It may not even generate one at all if the source domain is not found within the list of mapping relations.
 
-We hypothesize that a significant improvement might be realized by more carefully choosing hyponyms when traversing downwards in the tree.  This may be accomplished by using machine learning methods to determine appropriate replacements. A source of training data is the recently released VU Amsterdam Metaphor Corpus \cite{steen12} (subset of the BNC Baby texts), a metaphor-annotated corpus. Work has begun on this path of research, but no other machine learning techniques have been tested at this time. We have observed several different areas of the model where machine learning would be applicable, such as learning the characteristic in the source domain that motivates a conceptual mapping to the metaphorical target domain. Because the VU corpus provides annotations, another area of exploration might be to derive a list of metaphor relations directly, as compared to using the linguist-oriented Master Metaphor List.  The limiting factor is the current size of the VU corpus, not to mention the issues that arise when annotating metaphors in a dataset, as discussed in Shutova and Teufel \cite{shutova103}.
+We hypothesize that a significant improvement might be realized by more carefully choosing hyponyms when traversing downwards in the tree.  This may be accomplished by using machine learning methods to determine appropriate replacements. A source of training data is the recently released VU Amsterdam Metaphor Corpus \cite{steen12}, a metaphor-annotated corpus. We have begun preliminary work on this path of research, but no other machine learning techniques have been tested at this time. We have observed several different areas of the model where machine learning would be applicable, such as learning the characteristic in the source domain that motivates a conceptual mapping to the metaphorical target domain. Because the VU corpus provides metaphor annotations, another area of exploration might be to derive a list of metaphor relations directly, as compared to using the linguist-oriented Master Metaphor List.  As discussed in Shutova and Teufel \cite{shutova103}, the limiting factor is the current size of the VU corpus, not to mention the issues that arise when annotating metaphors in a dataset.
 
 \newpage
 % Bibliography Section
