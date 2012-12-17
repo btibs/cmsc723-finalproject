@@ -246,14 +246,9 @@ There is also a good amount of variation between evaluators in assigning example
 
 \section{Conclusion and Future Work}
 
-Conclusion-type things go here.
+Our approach to metaphor generation differs from that of Jones \cite{jones92} in that we explicitly outline a computational model to generate and evaluate candidate metaphorical domains. As far as we know, we are the first to provide baseline results for such a \emph{generative} method. Some limitations do exist with our current approach however. To generate \emph{reasonable} metaphors, we use a list of conceptual mapping relations derived from the Master Metaphor List \cite{lakoff89}. This by no means is a comprehensive list, thus the expressiveness (i.e., \emph{metaphoricity}) of our generated metaphors is limited by the variability of mapping relations used. One other point to make about our model is its dependency on accessing a sanitized dataset with correct hypernym/hyponym relationships. As has been pointed out by critics of WordNet in the past, hypernyms (respectively hyponyms) exist at all levels with varying degrees of generality. Given a word, if its direct hypernym is too general, our model may produce an unreasonable metaphor. It may not even generate one at all if the source domain is not found within the list of mapping relations, which were originally constructed under the assumption of not being overly general.
 
-There is clearly room for improvement.  Without changing our fundamental methods, one step is to add additional conceptual metaphors, which would improve the overall number of metaphors generated. We included many from Lakoff et. al. \cite{lakoff89}, but some mappings did not translate well into WordNet definitions and were left out.
-
-When identifying replacement words, we use the first word of the appropriate type for a pattern.  This can produce skewed results: for instance, given the sentence ``The dog ate a bowl of food'', ``bowl'' will be identified as a candidate for metaphorical replacement, though ``food'' might be a better choice.  This would require leveraging the parse information more completely in the target identification stage.
-
-We hypothesize a significant improvement might be realized by more carefully choosing hyponyms when traversing downwards in the tree.  This may be accomplished by using machine learning methods to determine appropriate replacements.
-Future Work - Describe the machine learning approach -> goal would be to learn the characteristic that motivates a conceptual mapping.  (xml metaphor corpus)
+We hypothesize that a significant improvement might be realized by more carefully choosing hyponyms when traversing downwards in the tree.  This may be accomplished by using machine learning methods to determine appropriate replacements. A source of training data is the recently released VU Amsterdam Metaphor Corpus \cite{steen12} (subset of the BNC Baby texts), a metaphor-annotated corpus. Work has begun on this path of research, but no other machine learning techniques have been tested at this time. We have observed several different areas of the model where machine learning would be applicable, such as learning the characteristic in the source domain that motivates a conceptual mapping to the metaphorical target domain. Because the VU corpus provides annotations, another area of exploration might be to derive a list of metaphor relations directly, as compared to using the linguist-oriented Master Metaphor List.  The limiting factor is the current size of the VU corpus, not to mention the issues that arise when annotating metaphors in a dataset, as discussed in Shutova and Teufel \cite{shutova103}.
 
 \newpage
 % Bibliography Section
@@ -325,6 +320,12 @@ Future Work - Describe the machine learning approach -> goal would be to learn t
   Models of Metaphor in NLP,
   In \emph{Proceedings of ACL 2010}.
   Uppsala, Sweden.
+
+\bibitem{shutova103}
+ E. Shutova, S. Teufel. 2010.
+ Metaphor Corpus Annotated for Source - Target Domain Mappings,
+ In \emph{Proceedings of the Seventh International Conference on Language Resources and Evaluation (LREC'10)}.
+ Valletta, Malta.
 
 \end{thebibliography}
 
